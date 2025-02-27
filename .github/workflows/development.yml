@@ -24,8 +24,6 @@ jobs:
       run: yarn run test-development
       env:
         CI: true
-        SCP_USERNAME: ${{ secrets.SCP_USERNAME }}
-        SCP_PASSWORD: ${{ secrets.SCP_PASSWORD }}
     - uses: actions/upload-artifact@v4
       if: always()
       with:

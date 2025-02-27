@@ -1,0 +1,31 @@
+{
+  "name": "trade-tariff-fpo-dev-hub-e2e",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:trade-tariff/trade-tariff-fpo-dev-hub-e2e.git",
+  "author": "William Fish <william.michael.fish@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@playwright/test": "1.50.1",
+    "@types/node": "^22.13.5",
+    "@typescript-eslint/eslint-plugin": "^8.25.0",
+    "@typescript-eslint/parser": "^8.25.0",
+    "dotenv": "^16.4.7",
+    "eslint": "^9.21.0",
+    "eslint-config-standard-with-typescript": "^43.0.1",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-n": "^17.15.1",
+    "eslint-plugin-promise": "^7.2.1",
+    "globals": "^16.0.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.25.0"
+  },
+  "scripts": {
+    "lint": "eslint . --ext .ts",
+    "fix": "eslint . --ext .ts --fix",
+    "test-development": "PLAYWRIGHT_ENV=development playwright test",
+    "test-staging": "PLAYWRIGHT_ENV=staging playwright test",
+    "test-production": "PLAYWRIGHT_ENV=production playwright test"
+  }
+}

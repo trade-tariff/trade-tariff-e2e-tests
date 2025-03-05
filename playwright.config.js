@@ -1,13 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
-import dotenv from "dotenv";
-import path from "path";
 
-const playwrightEnv = process.env.PLAYWRIGHT_ENV ?? "development";
-const envFile = path.resolve(__dirname, `.env.${playwrightEnv}`);
-dotenv.config({ path: envFile });
+const baseURL = process.env.BASE_URL || "https://dev.trade-tariff.service.gov.uk";
+const onCI = (process.env.CI ?? "false") === "true";
 
 // See https://playwright.dev/docs/test-configuration.
-const onCI = (process.env.CI ?? "false") === "true";
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
@@ -15,10 +11,7 @@ export default defineConfig({
   retries: onCI ? 2 : 0,
   workers: onCI ? 1 : undefined,
   reporter: "html",
-  use: { trace: "on" },
-  // TODO: Set the timeout that makes sense for the OTT project
-  // timeout: 140000,
-
+  use: { trace: "on", baseURL: baseURL },
   projects: [
     {
       name: "chromium",

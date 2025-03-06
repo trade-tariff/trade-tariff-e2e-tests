@@ -1,1 +1,0 @@
-  export const baseUrl =  process.env.Base_URL ||  "https://staging.trade-tariff.service.gov.uk/find_commodity";

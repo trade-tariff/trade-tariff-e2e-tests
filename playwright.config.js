@@ -1,11 +1,12 @@
 import { defineConfig, devices } from "@playwright/test";
+require('dotenv').config();
 
 const baseURL = process.env.BASE_URL || "https://dev.trade-tariff.service.gov.uk";
 const onCI = (process.env.CI ?? "false") === "true";
 
 // See https://playwright.dev/docs/test-configuration.
 export default defineConfig({
-  testDir: "./tests",
+  globalSetup: "./global-setup",
   fullyParallel: true,
   forbidOnly: onCI,
   retries: onCI ? 2 : 0,

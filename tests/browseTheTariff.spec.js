@@ -8,6 +8,6 @@ test.describe("BrowserPage", () => {
     await page.getByRole('link', { name: 'Heading 01:   Live horses,' }).click();
     await page.getByRole('link', { name: 'Commodity code 0101210000,' }).click();
     await expect(page.getByLabel('Breadcrumb').getByText('Commodity')).toBeVisible();
-  
+
   })
 })

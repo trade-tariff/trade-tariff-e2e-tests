@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  pre-commit:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,8 +22,8 @@ jobs:
             ${{ runner.os }}-pre-commit-
       - run: pip install pre-commit
       - run: pre-commit run --all-files
-      - name: Run pre-commit hooks
-        run: pre-commit run --all-files
+      - run: npm install -g yarn && yarn
+      - run: yarn run lint
   run-tests:
     uses: trade-tariff/trade-tariff-tools/.github/workflows/e2e-tests.yml@main
     with:

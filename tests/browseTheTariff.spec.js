@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-test.describe("BrowserPage", () => {
+test.describe("Browse Page", () => {
   test("Validating browsing the tariff", async ({ page }) => {
     await page.goto('/browse');
     await page.getByRole('link', { name: 'Section 1: Live animals;' }).click();

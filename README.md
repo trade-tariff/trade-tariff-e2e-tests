@@ -1,5 +1,7 @@
 # trade-tariff-e2e-tests
 
+[![Check Production](https://github.com/trade-tariff/trade-tariff-e2e-tests/actions/workflows/check-production.yml/badge.svg)](https://github.com/trade-tariff/trade-tariff-e2e-tests/actions/workflows/check-production.yml)
+
 > Remember to install pre-commit hooks before making any changes to the repository.
 
 Playwright suite used to validate the end to end functionality of the OTT Service

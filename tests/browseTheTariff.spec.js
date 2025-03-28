@@ -9,4 +9,4 @@ test.describe("Browse Page", () => {
     await page.getByRole('link', { name: 'Commodity code 0101210000,' }).click();
     await expect(page.getByLabel('Breadcrumb').getByText('Commodity')).toBeVisible();
   });
-})
+});

@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+require('dotenv').config();
 
 const baseURL = process.env.BASE_URL || "https://dev.trade-tariff.service.gov.uk";
 const onCI = (process.env.CI ?? "false") === "true";

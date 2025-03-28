@@ -15,5 +15,8 @@
     "lint": "eslint . --ext .js",
     "fix": "eslint . --ext .js --fix",
     "test": "playwright test"
+  },
+  "dependencies": {
+    "otplib": "^12.0.1"
   }
 }

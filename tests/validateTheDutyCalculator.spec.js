@@ -25,5 +25,5 @@ test.describe("Duty Calculator Integration", () => {
     await expect(page.getByRole('heading', { name: 'Import duty calculation' })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Option 1: Third-country duty" })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Option 2: Tariff preference' })).toBeVisible();
-  })
+  });
 });

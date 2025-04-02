@@ -6,4 +6,4 @@ test.describe("A-Z Navigation", () => {
     await page.getByRole('link', { name: 'Aa batteries (code: 8506)', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Heading 8506 - Primary cells' })).toBeVisible()
   });
-})
+});

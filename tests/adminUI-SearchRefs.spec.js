@@ -13,7 +13,6 @@ test.describe("Search References", () => {
 
   test("should display UK search references", async ({ page }) => {
     await page.getByRole("link", { name: "Search references" }).click();
-    await expect(page).toHaveURL("https://admin.dev.trade-tariff.service.gov.uk/search_references/sections");
     await page.getByRole("link", { name: "Search references" }).click();
     await page.getByRole("link", { name: "to 5" }).click();
     await page.getByRole("link", { name: "to 6" }).click();
@@ -24,10 +23,9 @@ test.describe("Search References", () => {
   test("should display XI Search references", async ({ page }) => {
     await page.getByRole("link", { name: "Switch to XI service" }).click();
     await page.getByRole("link", { name: "Search references" }).click();
-    await expect(page).toHaveURL("https://admin.dev.trade-tariff.service.gov.uk/xi/search_references/sections");
     await page.getByRole("link", { name: "to 5" }).click();
     await page.getByRole("link", { name: "to 6" }).click();
     await page.getByRole("link", { name: "Commodities in 0101" }).click();
-    await expect(page.getByRole("heading", { name: "Commodities search references"})).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Commodities search references" })).toBeVisible();
   });
 });

@@ -1,15 +1,8 @@
 import { test, expect } from "@playwright/test";
+import LoginPage from '../pages/loginPage.js';
 
 test.describe("Search References", () => {
-  test.beforeEach(async ({ page }, testInfo) => {
-    const isProduction = !!testInfo.project.use.baseURL.match(/www.trade-tariff.service.gov.uk/);
-    const adminUrl = process.env.ADMIN_URL;
-    const password = process.env.BASIC_PASSWORD;
-    test.skip(isProduction, 'Skipping in production');
-    await page.goto(adminUrl);
-    await page.getByRole("textbox", { id: "basic-session-password-field" }).fill(password);
-    await page.getByRole("button", { name: "Continue" }).click();
-  });
+  test.beforeEach(async ({ page }, testInfo) => await new LoginPage(page, testInfo).login());
 
   test("should display UK search references", async ({ page }) => {
     await page.getByRole("link", { name: "Search references" }).click();

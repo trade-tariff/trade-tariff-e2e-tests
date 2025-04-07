@@ -9,3 +9,20 @@ jobs:
     with:
       test-url: "https://www.trade-tariff.service.gov.uk"
       ref: ${{ github.sha }}
+
+  on-failure:
+    runs-on: ubuntu-latest
+    if: ${{always() && (needs.run-tests.result == 'failure' || needs.run-tests.result == 'timed_out')}}
+    needs:
+      - run-tests
+    steps:
+    - uses: actions/checkout@v2
+    - name: Slack notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_USERNAME: GitHub
+        SLACK_TITLE: Workflow ${{ needs.run-tests.result }} 
+        SLACK_CHANNEL: production-alerts
+        SLACK_COLOR: failure
+        MSG_MINIMAL: actions url
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}

@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import LoginPage from '../pages/loginPage.js';
 
 test.describe("Search References", () => {
-  test.beforeEach(async ({ page }, testInfo) => await new LoginPage(page, testInfo).login());
+  test.beforeEach(async ({ page }, testInfo) => await new LoginPage(process.env.ADMIN_URL, page, testInfo, true).login());
 
   test("should display UK search references", async ({ page }) => {
     await page.getByRole("link", { name: "Search references" }).click();
@@ -10,6 +10,7 @@ test.describe("Search References", () => {
     await page.getByRole("link", { name: "to 5" }).click();
     await page.getByRole("link", { name: "to 6" }).click();
     await page.getByRole("link", { name: "Commodities in 0101" }).click();
+
     await expect(page.getByRole("heading", { name: "Commodities search references" })).toBeVisible();
   });
 
@@ -19,6 +20,7 @@ test.describe("Search References", () => {
     await page.getByRole("link", { name: "to 5" }).click();
     await page.getByRole("link", { name: "to 6" }).click();
     await page.getByRole("link", { name: "Commodities in 0101" }).click();
+
     await expect(page.getByRole("heading", { name: "Commodities search references" })).toBeVisible();
   });
 });

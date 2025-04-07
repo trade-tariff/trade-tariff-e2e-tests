@@ -21,7 +21,7 @@ jobs:
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_USERNAME: GitHub
-        SLACK_TITLE: Workflow ${{ needs.run-tests.result }} 
+        SLACK_TITLE: Workflow ${{ needs.run-tests.result }}
         SLACK_CHANNEL: production-alerts
         SLACK_COLOR: failure
         MSG_MINIMAL: actions url

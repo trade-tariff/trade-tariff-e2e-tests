@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
 
 test.describe("Browse Page", () => {
   test("Validating browsing the tariff", async ({ page }) => {
@@ -7,6 +7,7 @@ test.describe("Browse Page", () => {
     await page.getByRole('link', { name: 'Chapter 01: Live animals' }).click();
     await page.getByRole('link', { name: 'Heading 01: Live horses,' }).click();
     await page.getByRole('link', { name: 'Commodity code 0101210000,' }).click();
-    await expect(page.getByLabel('Breadcrumb').getByText('Commodity')).toBeVisible();
+
+    expect(page.getByLabel('Breadcrumb').getByText('Commodity')).toBeVisible();
   });
 });

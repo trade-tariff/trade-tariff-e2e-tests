@@ -12,7 +12,7 @@ jobs:
 
   on-failure:
     runs-on: ubuntu-latest
-    if: ${{always() && (needs.run-tests.result == 'failure' || needs.run-tests.result == 'timed_out')}}
+    if: ${{always() && needs.run-tests.result != 'success'}}
     needs:
       - run-tests
     steps:

@@ -17,12 +17,11 @@ export default class LoginPage {
 
     await this.page.goto(this.url);
 
-    const loginLocator = await this.page.getByRole("textbox", { id: "basic-session-password-field" });
+    const loginLocator = this.page.locator('#basic-session-password-field');
 
-    if (await loginLocator.count() === 0) { return }
-
-    loginLocator.fill(this.password);
-
-    await this.page.getByRole("button", { name: "Continue" }).click();
+    if (await loginLocator.count() > 0) {
+      await loginLocator.fill(this.password);
+      await this.page.getByRole("button", { name: "Continue" }).click();
+    }
   }
 }

@@ -1,8 +1,9 @@
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
+import LoginPage from '../pages/loginPage.js';
 
 test.describe("Exchange Rates", () => {
-  test("Validating exchange rates", async ({ page }) => {
-    await page.goto("/exchange_rates");
+  test("Validating exchange rates", async ({ page }, testInfo) => {
+    await new LoginPage("/exchange_rates", page, testInfo).login()
 
     // Validate monthly exchange rates
     await page.locator('a[title^="View"]').first().click();

@@ -9,6 +9,6 @@ test.describe("Find Commodity Page", () => {
     await page.getByRole('combobox', { name: 'Search the UK Integrated' }).press('Enter');
 
     await expect(page.getByRole('heading', { name: 'Results matching ‘clothes’' })).toBeVisible();
-    
+
   });
 });

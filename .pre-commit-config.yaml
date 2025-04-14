@@ -3,10 +3,14 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-      - id: check-yaml
+      - id: check-json
       - id: check-merge-conflict
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: pretty-format-json
+        args:
+          - '--autofix'
+      - id: trailing-whitespace
 
   - repo: https://github.com/rhysd/actionlint.git
     rev: v1.7.7

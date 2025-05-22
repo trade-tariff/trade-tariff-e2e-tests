@@ -1,9 +1,6 @@
 name: development
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
 permissions:
@@ -23,13 +20,17 @@ jobs:
           key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pre-commit-
+
       - run: pip install pre-commit
+
       - run: pre-commit run --all-files
+
       - run: npm install -g yarn && yarn
+
       - run: yarn run lint
 
   run-tests:
-    uses: trade-tariff/trade-tariff-tools/.github/workflows/e2e-tests.yml@main
+    uses: trade-tariff/trade-tariff-tools/.github/workflows/e2e-tests.yml@HMRC-1061-simplify-e2e-flow
     with:
       test-url: "https://dev.trade-tariff.service.gov.uk"
       admin-test-url: "https://admin.dev.trade-tariff.service.gov.uk"

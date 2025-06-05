@@ -15,7 +15,8 @@
   "scripts": {
     "fix": "eslint . --ext .js --fix",
     "lint": "eslint . --ext .js",
-    "test": "playwright test --workers 2"
+    "test": "playwright test --workers 2",
+    "test-local": "playwright test"
   },
   "version": "1.0.0"
 }

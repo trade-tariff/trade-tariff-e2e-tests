@@ -14,7 +14,7 @@ test.describe("Duty Calculator Integration", () => {
     await page.getByRole('button', { name: 'Continue' }).click();
 
     // Navigate through the import origin step
-    await page.locator("//input[@id='steps-country-of-origin-country-of-origin-field']").click();
+    await page.locator("//input[@id='duty-calculator-steps-country-of-origin-country-of-origin-field']").click();
     await page.getByRole('combobox', { name: 'Where are the goods coming' }).fill('Canada');
     await page.getByRole('combobox', { name: 'Where are the goods coming' }).press('Enter');
     await page.getByRole('button', { name: 'Continue' }).click();

@@ -12,7 +12,7 @@ export default defineConfig({
   retries: onCI ? 2 : 0,
   workers: onCI ? 1 : undefined,
   reporter: "html",
-  use: { trace: "on", baseURL: baseURL },
+  use: { trace: "off", baseURL: baseURL },
   projects: [
     {
       name: "chromium",

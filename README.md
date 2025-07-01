@@ -41,6 +41,8 @@ yarn run playwright install
 
 ```bash
 yarn run test-development
+yarn run test-staging
+yarn run test-production
 ```
 
 ## Running tests in debug mode

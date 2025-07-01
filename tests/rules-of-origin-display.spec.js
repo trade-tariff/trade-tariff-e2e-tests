@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test';
 import LoginPage from '../pages/loginPage.js';
 
 test.describe("Rules of origin Display", () => {
-  test("Verify Rules of Origin are displayed for selected commodity", async ({ page }, testInfo) => {
-    await new LoginPage("/commodities/0409000010", page, testInfo).login()
+  test("Verify Rules of Origin are displayed for selected commodity", async ({ page }) => {
+    await new LoginPage("/commodities/0409000010", page).login()
     await page.getByRole('combobox', { name: 'Select or enter a country' }).click();
     await page.getByRole('option', { name: 'Albania (AL)' }).click();
     await page.getByRole('button', { name: 'Set country' }).click();

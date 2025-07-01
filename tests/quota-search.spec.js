@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test';
 import LoginPage from '../pages/loginPage.js';
 
 test.describe("Search for quotas", () => {
-  test("Validate UK quota Search Results", async ({ page }, testInfo) => {
-    await new LoginPage("/quota_search", page, testInfo).login();
+  test("Validate UK quota Search Results", async ({ page }) => {
+    await new LoginPage("/quota_search", page).login();
 
     await expect(page.getByRole('heading', { name: 'Search for quotas' })).toBeVisible();
     await page.getByRole('textbox', { name: 'Enter the 6-digit quota order' }).fill('052016');

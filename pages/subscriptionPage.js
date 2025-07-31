@@ -1,6 +1,5 @@
 import EmailFetcher from '../utils/emailFetcher.js';
 import S3Lock from '../utils/s3Lock.js';
-import CognitoUserCleaner from '../utils/cognitoUserCleaner.js';
 
 import { expect } from '@playwright/test';
 
@@ -10,15 +9,11 @@ export default class SubscribePage {
     this.email_address = process.env.PASSWORDLESS_SUBSCRIPTIONS_EMAIL
     this.fetcher = new EmailFetcher(process.env.PASSWORDLESS_SES_BUCKET, 'inbound/');
     this.locker = new S3Lock(process.env.PASSWORDLESS_SES_BUCKET, process.env.PASSWORDLESS_LOCK_KEY);
-    this.cleaner = new CognitoUserCleaner(process.env.PASSWORDLESS_POOL_NAME, process.env.AWS_DEFAULT_REGION);
   }
 
   async start() {
     // Acquire lock to ensure no other tests are running concurrently
     await this.locker.withLock(async () => {
-      // Cleanup before test
-      await this.cleaner.deleteUserByEmail(this.email_address);
-
       // Navigate through subscription verification flow
       await this.click(this.startNowButton());
       await this.emailInput().fill(this.email_address);
@@ -41,9 +36,6 @@ export default class SubscribePage {
       await this.unsubscribeLink().click();
       await this.unsubscribeSubmitButton().click();
       expect(this.page.url()).toContain('/subscriptions/unsubscribe/confirmation');
-
-      // Cleanup after test
-      await this.cleaner.deleteUserByEmail(this.email_address);
     });
   }
 

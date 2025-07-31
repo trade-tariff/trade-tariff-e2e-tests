@@ -79,7 +79,8 @@ export default class EmailFetcher {
   }
 
   getWhitelistedLinks(emailObj) {
-    const callbackRegex = /^(?:https?:\/\/)?(?:id\.dev|id\.staging)\.trade-tariff\.service\.gov\.uk\/passwordless\/callback\?email=e2e%40dev\.trade-tariff\.service\.gov\.uk&token=[a-f0-9]{64}&consumer=myott$/;
+    const encodedEmail = encodeURIComponent(this.targetRecipient).replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const callbackRegex = new RegExp(`^(?:https?:\\/\\/)?(?:id\\.dev|id\\.staging)\\.trade-tariff\\.service\\.gov\\.uk\\/passwordless\\/callback\\?email=${encodedEmail}&token=[a-f0-9]{64}&consumer=myott$`);
     const allLinks = this.extractLinks(emailObj);
     return allLinks.filter(link => {
       try {

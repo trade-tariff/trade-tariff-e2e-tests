@@ -49,7 +49,6 @@ export default class S3Lock {
 
   async withLock(callback) {
     const start = Date.now();
-    console.log("Registering shutdown handlers for lock release");
     this.registerShutdownHandlers();
     while (Date.now() - start < this.maxWaitMs) {
       if (await this.acquire()) {

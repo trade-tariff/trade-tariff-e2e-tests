@@ -4,7 +4,7 @@ export default class LoginPage {
   constructor(url, page, skipProduction = false) {
     this.page = page;
 
-    this.isProduction = !!process.env.BASE_URL.match(/www\.trade-tariff\.service\.gov\.uk/);
+    this.isProduction = !!process.env.BASE_URL.match(/www.trade-tariff.service.gov.uk/);
     this.isAdmin = !!url.match(/admin/);
     this.isFrontend = !!url.startsWith('/');
     this.url = url;
@@ -33,7 +33,6 @@ export default class LoginPage {
     await this.page.goto(this.url);
 
     const loginLocator = this.page.locator('#basic-session-password-field');
-    await loginLocator.scrollIntoViewIfNeeded();
 
     if (await loginLocator.count() > 0) {
       await loginLocator.fill(this.password);

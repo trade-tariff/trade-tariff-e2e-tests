@@ -33,9 +33,9 @@ export default class LoginPage {
     await this.page.goto(this.url);
 
     const loginLocator = this.page.locator('#basic-session-password-field');
-    await loginLocator.scrollIntoViewIfNeeded();
 
     if (await loginLocator.count() > 0) {
+      await loginLocator.scrollIntoViewIfNeeded();
       await loginLocator.fill(this.password);
       await this.page.getByRole("button", { name: "Continue" }).click();
     }

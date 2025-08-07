@@ -18,6 +18,9 @@ export default class SubscribePage {
     await this.locker.withLock(async () => {
       await this.cleaner.deleteUserByEmail(this.email_address);
 
+      // Sleep 1 second to ensure the user is deleted before proceeding
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       // Navigate through subscription verification flow
       await this.click(this.startNowButton());
       await this.emailInput().fill(this.email_address);
@@ -41,6 +44,7 @@ export default class SubscribePage {
       await this.unsubscribeSubmitButton().click();
       expect(this.page.url()).toContain('/subscriptions/unsubscribe/confirmation');
 
+      await this.fetcher.deleteEmail(this.email.s3_key);
       await this.cleaner.deleteUserByEmail(this.email_address);
     });
   }

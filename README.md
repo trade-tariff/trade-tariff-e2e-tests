@@ -40,7 +40,6 @@ yarn run playwright install
 ## Running tests
 
 ```bash
-yarn run test # Defaults to development environment
 yarn run test-development
 yarn run test-staging
 yarn run test-production

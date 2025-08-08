@@ -32,7 +32,7 @@ const apiPaths = [
 test.describe("API Endpoints Validation", () => {
   for (const path of apiPaths) {
     test(`${path} returns valid responses`, async ({ request }) => {
-      if (process.env.SKIP_API_TESTS === 'true') {
+      if (process.env.SKIP_API === 'true') {
         test.skip(`Skipping API test for ${path} as per environment variable`);
         return;
       }
@@ -42,7 +42,7 @@ test.describe("API Endpoints Validation", () => {
   }
 
   test("/api/v2/exchange_rates/:id supports filtering by type", async ({ request }) => {
-    if (process.env.SKIP_API_TESTS === 'true') {
+    if (process.env.SKIP_API === 'true') {
       test.skip("Skipping API test for exchange rates as per environment variable");
       return;
     }

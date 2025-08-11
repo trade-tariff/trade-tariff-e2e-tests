@@ -1,7 +1,12 @@
-import { CognitoIdentityProviderClient, ListUserPoolsCommand, ListUsersCommand, AdminDeleteUserCommand } from '@aws-sdk/client-cognito-identity-provider';
+import {
+  CognitoIdentityProviderClient,
+  ListUserPoolsCommand,
+  ListUsersCommand,
+  AdminDeleteUserCommand,
+} from "@aws-sdk/client-cognito-identity-provider";
 
 export default class CognitoUserCleaner {
-  constructor(userPoolName, region = 'eu-west-2') {
+  constructor(userPoolName, region = "eu-west-2") {
     this.userPoolName = userPoolName;
     this.client = new CognitoIdentityProviderClient({ region });
   }
@@ -15,7 +20,7 @@ export default class CognitoUserCleaner {
     const listCommand = new ListUsersCommand({
       UserPoolId: poolId,
       Filter: `email = "${email}"`,
-      Limit: 1
+      Limit: 1,
     });
 
     try {
@@ -28,7 +33,7 @@ export default class CognitoUserCleaner {
 
       const deleteCommand = new AdminDeleteUserCommand({
         UserPoolId: poolId,
-        Username: username
+        Username: username,
       });
 
       await this.client.send(deleteCommand);
@@ -41,7 +46,7 @@ export default class CognitoUserCleaner {
   async getUserPoolIdByName(name) {
     const listPoolsCommand = new ListUserPoolsCommand({ MaxResults: 60 });
     const { UserPools } = await this.client.send(listPoolsCommand);
-    const pool = UserPools?.find(p => p.Name === name);
+    const pool = UserPools?.find((p) => p.Name === name);
     return pool ? pool.Id : null;
   }
 }

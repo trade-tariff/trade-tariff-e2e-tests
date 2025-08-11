@@ -2,7 +2,7 @@ name: "New Relic Exporter"
 
 on:
   workflow_run:
-    workflows: ['Check Production']
+    workflows: ["Check Production"]
     types: [completed]
 
 env:

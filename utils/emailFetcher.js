@@ -1,4 +1,9 @@
-import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  ListObjectsV2Command,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { URL } from 'url';
 import { simpleParser } from 'mailparser';
 import * as cheerio from 'cheerio';
@@ -41,6 +46,15 @@ export default class EmailFetcher {
       }
     }
     return email;
+  }
+
+  async deleteEmail(key) {
+    const deleteCommand = new DeleteObjectCommand({ Bucket: this.bucket, Key: key });
+    try {
+      await this.s3Client.send(deleteCommand);
+    } catch (error) {
+      console.error(`Error deleting email with key ${key}:`, error);
+    }
   }
 
   async _fetchAndParseEmail(key) {

@@ -1,15 +1,15 @@
 {
   "author": "William Fish <william.michael.fish@gmail.com>",
   "devDependencies": {
-    "@aws-sdk/client-cognito-identity-provider": "^3.859.0",
-    "@aws-sdk/client-s3": "^3.850.0",
-    "@eslint/js": "^9.21.0",
-    "@playwright/test": "^1.54.2",
+    "@aws-sdk/client-cognito-identity-provider": "^3.862.0",
+    "@aws-sdk/client-s3": "^3.862.0",
+    "@eslint/js": "^9.32.0",
+    "@playwright/test": "1.54.2",
     "ajv": "^8.17.1",
     "cheerio": "^1.1.2",
-    "dotenv": "^16.4.7",
-    "eslint": "^9.21.0",
-    "globals": "^16.0.0",
+    "dotenv": "^17.2.1",
+    "eslint": "^9.32.0",
+    "globals": "^16.3.0",
     "jsona": "^1.12.1",
     "mailparser": "^3.7.4"
   },

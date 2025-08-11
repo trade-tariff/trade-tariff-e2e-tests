@@ -39,5 +39,6 @@ test.describe("News Section", () => {
     else {
       console.log("No live issues found, skipping validation.");
     }
+    
   });
 });

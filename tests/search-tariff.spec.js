@@ -28,5 +28,3 @@ test.describe("Find Commodity Page", () => {
   await expect(nonPrefRow.locator('text=/0\\.00\\s*%/').first()).toBeVisible();     // duty rate 0.00%
 });
 });
-
-

@@ -21,6 +21,8 @@
   "scripts": {
     "fix": "eslint . --ext .js --fix",
     "lint": "eslint . --ext .js",
+    "format-check": "prettier --check .",
+    "format": "prettier --write .",
     "test": "playwright test --workers 2",
     "test-development": "PLAYWRIGHT_ENV=development playwright test",
     "test-production": "PLAYWRIGHT_ENV=production playwright test",

@@ -14,6 +14,9 @@ test.describe("Rules of origin Display", () => {
     await page.getByRole("tab", { name: "Origin" }).click();
 
     await expect(
-      page.getByRole("heading", {name: "Preferential rules of origin for trading with Albania Flag for Albania"})).toBeVisible();
+      page.getByRole("heading", {
+        name: "Preferential rules of origin for trading with Albania Flag for Albania",
+      }),
+    ).toBeVisible();
   });
 });

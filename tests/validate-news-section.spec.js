@@ -8,8 +8,10 @@ test.describe("News Section", () => {
     // Navigate to the news section
     await expect(
       page.getByRole("heading", { name: "Trade tariff news bulletin" }),
-    ).toBeVisible({timeout: 10000});
-    await page.locator("//a[normalize-space()='2024']").click({timeout: 2000}); //Filter by previous year
+    ).toBeVisible({ timeout: 10000 });
+    await page
+      .locator("//a[normalize-space()='2024']")
+      .click({ timeout: 2000 }); //Filter by previous year
     await page.locator("//a[normalize-space()='Trade news']").click(); //Filter by collection
     await expect(page).toHaveURL(/\/news\/collections\/trade_news\/2024/); //  // Validate the URL
     //Check at least one news item is showing
@@ -30,7 +32,7 @@ test.describe("News Section", () => {
     const liveIssueLink = page.getByRole("link", {
       name: "View live issues log",
     });
-    await expect(liveIssueLink).toBeVisible({timeout: 10000});
+    await expect(liveIssueLink).toBeVisible({ timeout: 10000 });
     await liveIssueLink.click();
     // Validate the live issues log page
     const issueRows = page.locator(".news-item, tr");

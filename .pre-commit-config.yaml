@@ -23,12 +23,12 @@ repos:
       - id: markdownlint-docker
 
   - repo: https://github.com/trufflesecurity/trufflehog
-    rev: v3.90.3
+    rev: v3.90.5
     hooks:
       - id: trufflehog
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v9.33.0
+    rev: v9.34.0
     hooks:
       - id: eslint
         args: [--fix]

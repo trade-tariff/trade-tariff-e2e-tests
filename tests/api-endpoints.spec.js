@@ -2,6 +2,8 @@ import Jsona from "jsona";
 import { test, expect } from "@playwright/test";
 import { validateApi } from "../utils/validateApi";
 
+const spimmApiKey = process.env.SPIMM_API_KEY;
+
 const apiPaths = [
   // Legacy path validation
   "/api/v2/commodities/7013100000",
@@ -29,6 +31,21 @@ const apiPaths = [
   "/xi/api/updates/latest",
 ];
 
+let spimmEndpoints = [
+  {
+    path: "/xi/api/green_lanes/goods_nomenclatures/4412339010?filter[geographical_area_id]=CN",
+    headers: { "X-Api-Key": spimmApiKey },
+  },
+  {
+    path: "/xi/api/green_lanes/themes",
+    headers: { "X-Api-Key": spimmApiKey },
+  },
+];
+
+if (!spimmApiKey) {
+  spimmEndpoints = [];
+}
+
 test.describe("API Endpoints Validation", () => {
   for (const path of apiPaths) {
     test(`${path} returns valid responses`, async ({ request }) => {
@@ -37,6 +54,13 @@ test.describe("API Endpoints Validation", () => {
         return;
       }
       const result = await validateApi(request, path);
+      expect(result).toBeDefined();
+    });
+  }
+
+  for (const { path, headers } of spimmEndpoints) {
+    test(`Validate ${path}`, async ({ request }) => {
+      const result = await validateApi(request, path, headers);
       expect(result).toBeDefined();
     });
   }

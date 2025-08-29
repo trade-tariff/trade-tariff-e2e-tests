@@ -33,3 +33,4 @@ jobs:
       ref: ${{ github.sha }}
     secrets:
       basic_password: ${{ secrets.BASIC_PASSWORD }}
+      spimm_api_key: ${{ secrets.DEVELOPMENT_SPIMM_API_KEY }}

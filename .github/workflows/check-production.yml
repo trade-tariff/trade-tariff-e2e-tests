@@ -6,7 +6,7 @@ on:
 jobs:
   get_previous_status:
     runs-on: ubuntu-latest
-    env: 
+    env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Get Previous Run Status
@@ -23,7 +23,7 @@ jobs:
               page: 1,
             });
             return runs[1].status;
-    
+
   run-tests:
     uses: trade-tariff/trade-tariff-tools/.github/workflows/e2e-tests.yml@main
     with:

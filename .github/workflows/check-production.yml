@@ -4,6 +4,26 @@ on:
     - cron: "*/10 * * * *"
 
 jobs:
+  get_previous_status:
+    runs-on: ubuntu-latest
+    env: 
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Get Previous Run Status
+        id: get_previous_status
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: runs } = await github.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: context.workflow,
+              per_page: 2,
+              page: 1,
+            });
+            return runs[1].status;
+    
   run-tests:
     uses: trade-tariff/trade-tariff-tools/.github/workflows/e2e-tests.yml@main
     with:
@@ -12,8 +32,9 @@ jobs:
 
   on-failure:
     runs-on: ubuntu-latest
-    if: ${{always() && needs.run-tests.result != 'success'}}
+    if: ${{always() && needs.get_previous_status.outputs.result != success() && needs.run-tests.result != 'success'}}
     needs:
+      - get_previous_status
       - run-tests
     steps:
       - uses: actions/checkout@v4

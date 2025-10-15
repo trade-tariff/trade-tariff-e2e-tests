@@ -6,6 +6,8 @@ on:
 jobs:
   get_previous_status:
     runs-on: ubuntu-latest
+    outputs:
+      previous_status: ${{ steps.get_previous_status.outputs.status }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -25,6 +27,7 @@ jobs:
             return runs[1].status;
 
   run-tests:
+    needs: get_previous_status
     uses: trade-tariff/trade-tariff-tools/.github/workflows/e2e-tests.yml@main
     with:
       test-environment: production
@@ -32,7 +35,7 @@ jobs:
 
   on-failure:
     runs-on: ubuntu-latest
-    if: ${{always() && needs.get_previous_status.outputs.result != success() && needs.run-tests.result != 'success'}}
+    if: ${{always() && needs.get_previous_status.outputs.previous_status != 'success' && needs.run-tests.result != 'success'}}
     needs:
       - get_previous_status
       - run-tests

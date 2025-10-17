@@ -9,8 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       previous_status: ${{ steps.get_previous_status.outputs.status }}
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     steps:
       - name: Get Previous Run Status
         id: get_previous_status
@@ -18,14 +17,17 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { data: runs } = await github.actions.listWorkflowRuns({
+            const { data } = await github.rest.actions.listWorkflowRuns({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              workflow_id: context.workflow,
+              workflow_id: "check-production.yml",
               per_page: 2,
-              page: 1,
             });
-            return runs[1].status;
+            const runs = data.workflow_runs;
+            const previous = runs?.[1]?.conclusion || 'none';
+            console.log(`Previous run conclusion: ${previous}`);
+
+            core.setOutput("status", previous);
 
   run-tests:
     needs: get_previous_status
@@ -36,7 +38,7 @@ jobs:
 
   on-failure:
     runs-on: ubuntu-latest
-    if: ${{always() && needs.get_previous_status.outputs.previous_status != 'success' && needs.run-tests.result != 'success'}}
+    if: ${{always() && needs.get_previous_status.outputs.previous_status == 'success' && needs.run-tests.result != 'success'}}
     needs:
       - get_previous_status
       - run-tests

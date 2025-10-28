@@ -12,6 +12,7 @@ test.describe("Simplified Procedural Measures", () => {
       .getByRole("button", { name: "View rates for selected date" })
       .click();
 
+    await page.waitForSelector("tbody tr");
     const rowCount = await page.locator("tbody tr").count();
     expect(rowCount).toBeGreaterThan(0);
 

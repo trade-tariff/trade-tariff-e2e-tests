@@ -20,7 +20,7 @@ export default defineConfig({
     trace: "off",
     baseURL: process.env.BASE_URL,
   },
-  timeout: 60 * 1000, // 60 seconds
+  timeout: 10 * 1000, // 10 seconds
   projects: [
     {
       name: "chromium",

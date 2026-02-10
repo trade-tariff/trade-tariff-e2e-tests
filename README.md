@@ -49,9 +49,8 @@ strict-ssl false
 
 This will disable SSL certificate verification for yarn in this project. Note that this is a **local configuration file** that should not be committed to the repository.
 
-**Alternative solutions:**
+**Alternative solution:**
 - Add your organization's CA certificate to your system's trust store (recommended for production use)
-- Use `yarn install --ignore-engines` if the issue is related to engine compatibility
 
 ## Running tests
 

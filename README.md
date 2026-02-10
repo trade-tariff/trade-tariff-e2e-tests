@@ -39,11 +39,19 @@ yarn run playwright install
 
 ### SSL Certificate Issues
 
-If you encounter SSL certificate errors when running `yarn install` (e.g., "self-signed certificate in certificate chain"), this is typically caused by corporate proxies with SSL inspection. The repository includes a `.yarnrc` configuration file that disables strict SSL checking to allow installation in such environments.
+If you encounter SSL certificate errors when running `yarn install` (e.g., "self-signed certificate in certificate chain"), this is typically caused by corporate proxies with SSL inspection.
 
-If you need to use strict SSL checking, you can either:
-- Remove or comment out the `strict-ssl false` line in `.yarnrc`
-- Add your organization's CA certificate to your system's trust store
+**Workaround:** Create a `.yarnrc` file in the project root with the following content:
+
+```
+strict-ssl false
+```
+
+This will disable SSL certificate verification for yarn in this project. Note that this is a **local configuration file** that should not be committed to the repository.
+
+**Alternative solutions:**
+- Add your organization's CA certificate to your system's trust store (recommended for production use)
+- Use `yarn install --ignore-engines` if the issue is related to engine compatibility
 
 ## Running tests
 

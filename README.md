@@ -49,8 +49,15 @@ strict-ssl false
 
 This will disable SSL certificate verification for yarn in this project. Note that this is a **local configuration file** that should not be committed to the repository.
 
-**Alternative solution:**
-- Add your organization's CA certificate to your system's trust store (recommended for security)
+⚠️ **Security Warning:** Disabling SSL verification bypasses certificate validation and makes your connection vulnerable to man-in-the-middle attacks. Only use this workaround temporarily in trusted corporate environments where you understand the SSL inspection setup.
+
+**Alternative solution (recommended for security):**
+Add your organization's CA certificate to your system's trust store:
+- **macOS**: Add certificate to Keychain Access
+- **Linux**: Add certificate to `/usr/local/share/ca-certificates/` and run `sudo update-ca-certificates`
+- **Windows**: Add certificate to the Trusted Root Certification Authorities store
+
+Contact your IT department for the appropriate CA certificate file.
 
 ## Running tests
 

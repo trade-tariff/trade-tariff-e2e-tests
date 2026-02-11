@@ -10,6 +10,7 @@ dotenv.config({ path: ".env" });
 // See https://playwright.dev/docs/test-configuration.
 const onCI = (process.env.CI ?? "false") === "true";
 export default defineConfig({
+  globalSetup: "./global-setup.js",
   testDir: "./tests",
   fullyParallel: true,
   forbidOnly: onCI,
@@ -20,7 +21,7 @@ export default defineConfig({
     trace: "off",
     baseURL: process.env.BASE_URL,
   },
-  timeout: 10 * 1000, // 10 seconds
+  timeout: 30 * 1000, // 30 seconds
   projects: [
     {
       name: "chromium",

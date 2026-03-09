@@ -45,11 +45,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Slack notification
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_USERNAME: GitHub
-          SLACK_TITLE: Workflow ${{ needs.run-tests.result }}
-          SLACK_CHANNEL: production-alerts
-          SLACK_COLOR: failure
-          MSG_MINIMAL: actions url
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        uses: trade-tariff/trade-tariff-tools/.github/actions/slack-notify@main
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          username: GitHub
+          channel: production-alerts
+          color: failure
+          title: Workflow ${{ needs.run-tests.result }}
+          message: Workflow ${{ needs.run-tests.result }}

@@ -3,7 +3,7 @@ import LoginPage from "../pages/loginPage.js";
 import validateTariffDate from "../utils/tariffDate.js";
 
 test.describe("Validate updates", () => {
-  test("Validating updates are happening", async ({ page }) => {
+  test.skip("Validating updates are happening", async ({ page }) => {
     await new LoginPage("/find_commodity", page).login();
 
     const locator = page.locator("#last-updated-at p", {

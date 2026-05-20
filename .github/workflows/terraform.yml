@@ -1,0 +1,84 @@
+name: Terraform CI/CD
+
+on:
+  pull_request:
+    paths:
+      - "terraform/**"
+  push:
+    branches:
+      - main
+    paths:
+      - "terraform/**"
+
+env:
+  ENVIRONMENT: development # chnage to production for live deployment
+  TF_INPUT: 0
+  TF_IN_AUTOMATION: 1
+  TERRAFORM_VERSION: 1.12
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  terraform:
+    name: Terraform Plan & Apply
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./terraform
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::844815912454:role/GithubActions-E2E-Testing-Role
+          aws-region: eu-west-2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      # Move it to pre-commit hooks later
+      - name: Validate Formatting
+        run: terraform fmt -check
+
+      # Connect and map remote S3 infrastructure state files
+      - name: Initialize Terraform Working State
+        run: terraform init -backend-config=backends/${{ env.ENVIRONMENT }}.tfbackend
+
+      # Execute dry-run change plan
+      - name: Generate Infrastructure Plan
+        id: plan
+        run: terraform plan -no-color -out=tfplan
+        continue-on-error: false
+
+      # Post the Plan Output back to the PR window for review visibility
+      - name: Comment Plan on Pull Request
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const output = `#### Terraform Format and Style 🖌
+            #### Terraform Initialization ⚙️
+            #### Terraform Plan 🚀
+
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      # If merged into main, apply the live infrastructure configuration modifications
+      - name: Execute Live Deployment
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve tfplan

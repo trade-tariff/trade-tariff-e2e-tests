@@ -20,7 +20,7 @@ resource "aws_cloudwatch_event_connection" "github_api_conn" {
 resource "aws_cloudwatch_event_api_destination" "github_api_target" {
   name                             = "trade-tariff-e2e-${var.environment}-api-target"
   description                      = "Targets workflow dispatch endpoint for check-production.yml"
-  invocation_endpoint              = "https://github.com{var.github_repository}/actions/workflows/check-production.yml/dispatches"
+  invocation_endpoint              = "https://github.com/${var.github_repository}/actions/workflows/check-production.yml/dispatches"
   http_method                      = "POST"
   connection_arn                   = aws_cloudwatch_event_connection.github_api_conn.arn
   invocation_rate_limit_per_second = 1
@@ -38,7 +38,7 @@ resource "aws_iam_role" "scheduler_role" {
       {
         Effect = "Allow"
         Principal = {
-          Service = "://amazonaws.com"
+          Service = "scheduler.amazonaws.com"
         }
         Action = "sts:AssumeRole"
       }
@@ -79,7 +79,8 @@ resource "aws_scheduler_schedule" "e2e_10min_loop" {
   description = "Triggers the Playwright E2E production suite every 10 minutes"
   group_name  = "default"
 
-  state = var.environment == "production" ? "ENABLED" : "DISABLED"
+  # state = var.environment == "production" ? "ENABLED" : "DISABLED"
+  state = "ENABLED" # TEMPORARY FOR TESTING: Force it on in Dev
 
   schedule_expression          = "cron(*/10 * * * ? *)"
   schedule_expression_timezone = "UTC"
@@ -94,7 +95,8 @@ resource "aws_scheduler_schedule" "e2e_10min_loop" {
 
     # Universal Targets require explicit payload inputs
     input = jsonencode({
-      ref = "main" # Forces execution against the main production test branch
+      # ref = "main" # Forces execution against the main production test branch
+      ref = "HMRC-2234-move-check-scheduling" # TEMPORARY FOR TESTING
     })
 
     retry_policy {

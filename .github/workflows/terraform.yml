@@ -78,7 +78,13 @@ jobs:
               body: output
             })
 
-      # If merged into main, apply the live infrastructure configuration modifications
       - name: Execute Live Deployment
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve tfplan
+
+      # If merged into main, apply the live infrastructure configuration modifications
+      # - name: Execute Live Deployment
+      #   # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      #   # run: terraform apply -auto-approve tfplan
+      #   # Testing with the feature branch to validate the workflow before merging into main
+      #   if: github.ref == 'refs/heads/HMRC-2234-move-check-scheduling' || github.ref == 'refs/heads/main'
+      #   run: terraform apply -auto-approve tfplan

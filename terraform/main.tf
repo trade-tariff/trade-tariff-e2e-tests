@@ -20,7 +20,7 @@ resource "aws_cloudwatch_event_connection" "github_api_conn" {
 resource "aws_cloudwatch_event_api_destination" "github_api_target" {
   name                             = "trade-tariff-e2e-${var.environment}-api-target"
   description                      = "Targets workflow dispatch endpoint for check-production.yml"
-  invocation_endpoint              = "https://github.com/${var.github_repository}/actions/workflows/check-production.yml/dispatches"
+  invocation_endpoint              = "https://api.github.com/repos/${var.github_repository}/actions/workflows/check-production.yml/dispatches"
   http_method                      = "POST"
   connection_arn                   = aws_cloudwatch_event_connection.github_api_conn.arn
   invocation_rate_limit_per_second = 1
@@ -48,18 +48,16 @@ resource "aws_iam_role" "scheduler_role" {
 
 resource "aws_iam_policy" "scheduler_invoke_policy" {
   name        = "trade-tariff-e2e-${var.environment}-scheduler-invoke-policy"
-  description = "Allows AWS Scheduler to dispatch webhooks via API Destination"
+  description = "Allows AWS Scheduler to put events onto the default EventBridge bus"
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
         Effect = "Allow"
-        Action = [
-          "events:InvokeApiDestination"
-        ]
+        Action = ["events:PutEvents"]
         Resource = [
-          aws_cloudwatch_event_api_destination.github_api_target.arn
+          "arn:aws:events:${var.aws_region}:${data.aws_caller_identity.current.account_id}:event-bus/default"
         ]
       }
     ]
@@ -69,6 +67,67 @@ resource "aws_iam_policy" "scheduler_invoke_policy" {
 resource "aws_iam_role_policy_attachment" "scheduler_attach" {
   role       = aws_iam_role.scheduler_role.name
   policy_arn = aws_iam_policy.scheduler_invoke_policy.arn
+}
+
+resource "aws_iam_role" "eventbridge_invoke_role" {
+  name = "trade-tariff-e2e-${var.environment}-eventbridge-invoke-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "events.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "eventbridge_invoke_policy" {
+  name = "trade-tariff-e2e-${var.environment}-eventbridge-invoke-policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["events:InvokeApiDestination"]
+        Resource = [aws_cloudwatch_event_api_destination.github_api_target.arn]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "eventbridge_invoke_attach" {
+  role       = aws_iam_role.eventbridge_invoke_role.name
+  policy_arn = aws_iam_policy.eventbridge_invoke_policy.arn
+}
+
+resource "aws_cloudwatch_event_rule" "catch_scheduler_event" {
+  name        = "trade-tariff-e2e-${var.environment}-routing-rule"
+  description = "Catches 10-minute scheduler events and forwards them to GitHub"
+
+  event_pattern = jsonencode({
+    source      = ["trade-tariff.e2e.scheduler"]
+    detail-type = ["TriggerProductionWorkflow"]
+  })
+}
+
+resource "aws_cloudwatch_event_target" "forward_to_github" {
+  rule     = aws_cloudwatch_event_rule.catch_scheduler_event.name
+  arn      = aws_cloudwatch_event_api_destination.github_api_target.arn
+  role_arn = aws_iam_role.eventbridge_invoke_role.arn # ← dedicated role, not scheduler_role
+
+  input_transformer {
+    input_paths = {
+      ref = "$.detail.ref"
+    }
+    # GitHub's dispatch endpoint expects exactly {"ref": "..."}
+    input_template = "{\"ref\": <ref>}"
+  }
 }
 
 #-------------------------------------------------------------------------------
@@ -90,13 +149,15 @@ resource "aws_scheduler_schedule" "e2e_10min_loop" {
   }
 
   target {
-    arn      = aws_cloudwatch_event_api_destination.github_api_target.arn
+    arn      = "arn:aws:events:${var.aws_region}:${data.aws_caller_identity.current.account_id}:event-bus/default"
     role_arn = aws_iam_role.scheduler_role.arn
 
     # Universal Targets require explicit payload inputs
     input = jsonencode({
       # ref = "main" # Forces execution against the main production test branch
-      ref = "HMRC-2234-move-check-scheduling" # TEMPORARY FOR TESTING
+      Source     = "trade-tariff.e2e.scheduler"
+      DetailType = "TriggerProductionWorkflow"
+      Detail     = "{\"ref\":\"HMRC-2234-move-check-scheduling\"}"
     })
 
     retry_policy {

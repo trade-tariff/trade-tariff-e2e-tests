@@ -74,6 +74,7 @@ resource "aws_iam_role_policy_attachment" "scheduler_attach" {
 #-------------------------------------------------------------------------------
 # 4. Chronological 10-Minute Scheduler Rule Engine
 #-------------------------------------------------------------------------------
+# 1. The Clock: Fires a generic JSON payload to your default EventBridge Bus every 10 minutes
 resource "aws_scheduler_schedule" "e2e_10min_loop" {
   name        = "trade-tariff-e2e-${var.environment}-10min-loop"
   description = "Triggers the Playwright E2E production suite every 10 minutes"
@@ -90,13 +91,15 @@ resource "aws_scheduler_schedule" "e2e_10min_loop" {
   }
 
   target {
-    arn      = aws_cloudwatch_event_api_destination.github_api_target.arn
+    arn      = "arn:aws:scheduler:::aws-targets/eventbridge-putevents"
     role_arn = aws_iam_role.scheduler_role.arn
 
     # Universal Targets require explicit payload inputs
     input = jsonencode({
       # ref = "main" # Forces execution against the main production test branch
-      ref = "HMRC-2234-move-check-scheduling" # TEMPORARY FOR TESTING
+      Source     = "trade-tariff.e2e.scheduler"
+      DetailType = "TriggerProductionWorkflow"
+      Detail     = jsonencode({ ref = "HMRC-2234-move-check-scheduling" })
     })
 
     retry_policy {
@@ -104,6 +107,24 @@ resource "aws_scheduler_schedule" "e2e_10min_loop" {
       maximum_retry_attempts       = 2
     }
   }
+}
+
+# 2. The Router: Listens to your EventBus for the specific payload fired above
+resource "aws_cloudwatch_event_rule" "catch_scheduler_event" {
+  name        = "trade-tariff-e2e-${var.environment}-routing-rule"
+  description = "Catches 10-minute scheduler events and forwards them to GitHub"
+
+  event_pattern = jsonencode({
+    source      = ["trade-tariff.e2e.scheduler"]
+    detail-type = ["TriggerProductionWorkflow"]
+  })
+}
+
+# 3. The Delivery: Connects the Router to your final GitHub API Destination
+resource "aws_cloudwatch_event_target" "forward_to_github" {
+  rule     = aws_cloudwatch_event_rule.catch_scheduler_event.name
+  arn      = aws_cloudwatch_event_api_destination.github_api_target.arn
+  role_arn = aws_iam_role.scheduler_role.arn # Reuses the same execution role
 }
 
 #-------------------------------------------------------------------------------

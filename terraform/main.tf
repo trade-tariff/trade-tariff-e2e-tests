@@ -155,9 +155,16 @@ resource "aws_scheduler_schedule" "e2e_10min_loop" {
     # Universal Targets require explicit payload inputs
     input = jsonencode({
       # ref = "main" # Forces execution against the main production test branch
-      Source     = "trade-tariff.e2e.scheduler"
-      DetailType = "TriggerProductionWorkflow"
-      Detail     = "{\"ref\":\"HMRC-2234-move-check-scheduling\"}"
+      Entries = [
+        {
+          Source     = "trade-tariff.e2e.scheduler"
+          DetailType = "TriggerProductionWorkflow"
+          Detail = jsonencode({
+            ref = "HMRC-2234-move-check-scheduling"
+          })
+          EventBusName = "default"
+        }
+      ]
     })
 
     retry_policy {

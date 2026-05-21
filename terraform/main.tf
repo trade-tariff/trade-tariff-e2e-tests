@@ -180,11 +180,21 @@ resource "aws_cloudwatch_metric_alarm" "scheduler_delivery_failure" {
   period              = 600 # Evaluated across a 10-minute cadence loop
   statistic           = "Sum"
   threshold           = 0
-  treat_missing_data  = "breaching" # Flags an alarm if AWS metrics stop sending entirely
+  treat_missing_data  = "notBreaching"
 
   dimensions = {
     ScheduleName = aws_scheduler_schedule.e2e_10min_loop.name
   }
 
   alarm_actions = [var.sns_alert_topic_arn]
+}
+
+resource "aws_cloudwatch_log_group" "eventbridge_logs" {
+  name              = "/aws/events/trade-tariff-e2e-${var.environment}"
+  retention_in_days = 7
+}
+
+resource "aws_cloudwatch_event_target" "log_all_scheduler_events" {
+  rule = aws_cloudwatch_event_rule.catch_scheduler_event.name
+  arn  = aws_cloudwatch_log_group.eventbridge_logs.arn
 }

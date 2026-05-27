@@ -13,23 +13,23 @@ repos:
       - id: trailing-whitespace
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.45.0
+    rev: v0.48.0
     hooks:
       - id: markdownlint-docker
 
   - repo: https://github.com/trufflesecurity/trufflehog
-    rev: v3.90.8
+    rev: v3.95.3
     hooks:
       - id: trufflehog
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v9.37.0
+    rev: v10.4.0
     hooks:
       - id: eslint
         args: [--fix]
 
   - repo: https://github.com/JoC0de/pre-commit-prettier
-    rev: v3.6.2
+    rev: v3.8.3
     hooks:
       - id: prettier
         args: [--write]

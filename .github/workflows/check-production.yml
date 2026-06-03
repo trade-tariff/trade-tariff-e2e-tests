@@ -36,7 +36,7 @@ jobs:
 
   on-failure:
     runs-on: ubuntu-latest
-    if: ${{always() && needs.get_previous_status.outputs.previous_status == 'success' && needs.run-tests.result != 'success'}}
+    if: ${{always() && needs.get_previous_status.outputs.previous_status != 'success' && needs.run-tests.result != 'success'}}
     needs:
       - get_previous_status
       - run-tests

@@ -41,7 +41,7 @@ jobs:
       - get_previous_status
       - run-tests
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
       - name: Slack notification
         uses: trade-tariff/trade-tariff-tools/.github/actions/slack-notify@main
         with:

@@ -45,7 +45,7 @@ jobs:
       - name: Slack notification
         uses: trade-tariff/trade-tariff-tools/.github/actions/slack-notify@main
         with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook: ${{ secrets.SLACK_WEBHOOK }}
           username: GitHub
           channel: production-alerts
           color: failure

@@ -11,7 +11,7 @@
     "eslint": "^9.36.0",
     "globals": "^17.6.0",
     "jsona": "^1.12.1",
-    "mailparser": "^3.9.3",
+    "mailparser": "^3.9.9",
     "prettier": "^3.8.3"
   },
   "license": "MIT",

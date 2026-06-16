@@ -4,16 +4,16 @@ import LoginPage from "../pages/loginPage.js";
 test.describe("Find Commodity", () => {
   test("searching commodity by reference", async ({ page }) => {
     await new LoginPage("/find_commodity", page).login();
-    await page.locator("#q").fill("ricotta");
-    await page.locator("#q").press("Enter");
+    await page.locator('input[role="combobox"]').fill("ricotta");
+    await page.locator('input[role="combobox"]').press("Enter");
 
     expect(page.url()).toContain("/commodities/0406105090");
   });
 
   test("searching commodity by code", async ({ page }) => {
     await new LoginPage("/find_commodity", page).login();
-    await page.locator("#q").fill("1701991000");
-    await page.locator("#q").press("Enter");
+    await page.locator('input[role="combobox"]').fill("1701991000");
+    await page.locator('input[role="combobox"]').press("Enter");
 
     expect(page.url()).toContain("/commodities/1701991000");
 

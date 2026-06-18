@@ -6,5 +6,6 @@ node_modules/
 
 .direnv
 .envrc
+/.pre-commit-config-nix.yaml
 
 .env

@@ -69,6 +69,7 @@
               stages = [ "pre-commit" ];
             };
             nixfmt-rfc-style = {
+              package = pre-commit-hooks.inputs.nixpkgs.legacyPackages.${system}.nixfmt;
               enable = true;
               stages = [ "pre-commit" ];
             };

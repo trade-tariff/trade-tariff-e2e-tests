@@ -1,5 +1,6 @@
 import path from "path";
 import dotenv from "dotenv";
+import { wafBypassHeaders } from "./utils/wafBypassHeaders.js";
 
 const playwrightEnv = process.env.PLAYWRIGHT_ENV ?? "development";
 const envFile = path.resolve(__dirname, `.env.${playwrightEnv}`);
@@ -62,7 +63,7 @@ export default async function globalSetup() {
     const startedAt = Date.now();
 
     try {
-      const res = await fetch(healthUrl);
+      const res = await fetch(healthUrl, { headers: wafBypassHeaders() });
       const event = {
         timestamp: new Date().toISOString(),
         attempt,

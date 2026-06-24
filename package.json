@@ -16,8 +16,8 @@
   },
   "license": "MIT",
   "main": "index.js",
-  "name": "trade-tariff-fpo-dev-hub-e2e",
-  "repository": "git@github.com:trade-tariff/trade-tariff-fpo-dev-hub-e2e.git",
+  "name": "trade-tariff-e2e-tests",
+  "repository": "git@github.com:trade-tariff/trade-tariff-e2e-tests.git",
   "scripts": {
     "fix": "eslint . --ext .js --fix",
     "lint": "eslint . --ext .js",

@@ -1,5 +1,7 @@
 name: Check Production
 on:
+  schedule:
+    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -33,6 +35,8 @@ jobs:
     with:
       test-environment: production
       ref: ${{ github.sha }}
+    secrets:
+      waf_bypass_token: ${{ secrets.WAF_BYPASS_TOKEN }}
 
   on-failure:
     runs-on: ubuntu-latest

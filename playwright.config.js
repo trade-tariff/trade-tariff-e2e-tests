@@ -20,6 +20,9 @@ export default defineConfig({
   use: {
     trace: "off",
     baseURL: process.env.BASE_URL,
+    extraHTTPHeaders: process.env.WAF_BYPASS_TOKEN
+      ? { "x-waf-bypass": process.env.WAF_BYPASS_TOKEN }
+      : {},
   },
   timeout: 30 * 1000, // 30 seconds
   projects: [

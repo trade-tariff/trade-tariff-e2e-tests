@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 import path from "path";
 import dotenv from "dotenv";
+import { wafBypassHeaders } from "./utils/wafBypassHeaders.js";
 
 const playwrightEnv = process.env.PLAYWRIGHT_ENV ?? "development";
 const envFile = path.resolve(__dirname, `.env.${playwrightEnv}`);
@@ -20,9 +21,7 @@ export default defineConfig({
   use: {
     trace: "off",
     baseURL: process.env.BASE_URL,
-    extraHTTPHeaders: process.env.WAF_BYPASS_TOKEN
-      ? { "x-waf-bypass": process.env.WAF_BYPASS_TOKEN }
-      : {},
+    extraHTTPHeaders: wafBypassHeaders(),
   },
   timeout: 30 * 1000, // 30 seconds
   projects: [

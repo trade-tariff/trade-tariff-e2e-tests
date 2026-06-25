@@ -1033,10 +1033,10 @@ locate-path@^6.0.0:
   dependencies:
     p-locate "^5.0.0"
 
-mailparser@^3.9.9:
-  version "3.9.9"
-  resolved "https://registry.yarnpkg.com/mailparser/-/mailparser-3.9.9.tgz#1c8d0e964723119c3af6089c5b055937073e5d99"
-  integrity sha512-ulZi7h1eKm8WQmXibIgj8dmMQGDQCUS/g+XHkxxjcLDq4Dwn2ppo+0hz5Fi+ltvu4eN7mh3ykIp5RcpiWWav1w==
+mailparser@^3.9.10:
+  version "3.9.10"
+  resolved "https://registry.yarnpkg.com/mailparser/-/mailparser-3.9.10.tgz#7ad029c6df7a3b2c3f3a3793828c7f361412baf7"
+  integrity sha512-/PWScCewV4/97Y0wDNgQkcQ4FK8AK0aGVPAg51lVyisiRep9BkzkzT3/l/7aSkQ1k2T1iJu1tdXVF84wjGdDqw==
   dependencies:
     "@zone-eu/mailsplit" "5.4.12"
     encoding-japanese "2.2.0"
@@ -1045,7 +1045,7 @@ mailparser@^3.9.9:
     iconv-lite "0.7.2"
     libmime "5.3.8"
     linkify-it "5.0.1"
-    nodemailer "8.0.10"
+    nodemailer "9.0.0"
     punycode.js "2.3.1"
     tlds "1.261.0"
 
@@ -1066,10 +1066,10 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==
 
-nodemailer@8.0.10:
-  version "8.0.10"
-  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-8.0.10.tgz#009d4deaa06f54b6bd7ddc6cac1bf78e3bcb0bf2"
-  integrity sha512-BLFuSth7QtHOkBzyqTehWWyub0NTRDuK2Q2SQfnGLsrJnzyU+Yeh4WpV1eZGuARFj1xQJHIdnTuJZLP+b9R1GQ==
+nodemailer@9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-9.0.0.tgz#b01f5fe72c1b3576fdd2d7b272eee8c1c6ad45bd"
+  integrity sha512-tbPTid7d/p9jAA8CRZ3iomvrMaST0o6NYuY7v6JQZHpPRZ61mLFSPKYd7342NtOFuej9/+L48SOIxwfu2uDvtw==
 
 nth-check@^2.0.1:
   version "2.1.1"

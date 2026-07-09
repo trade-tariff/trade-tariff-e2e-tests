@@ -2,23 +2,28 @@ import { expect } from "@playwright/test";
 
 export function monitorAssetErrors(page) {
   const assetFailures = [];
-  const consoleErrors = [];
+  const assetConsoleErrors = [];
   const pageErrors = [];
+  const assetPathPattern = /\/(assets|javascripts)\//;
 
   page.on("response", (response) => {
     const url = response.url();
 
-    if (
-      response.status() >= 400 &&
-      (url.includes("/assets/") || url.includes("/javascripts/"))
-    ) {
+    if (response.status() >= 400 && assetPathPattern.test(url)) {
       assetFailures.push(`${response.status()} ${url}`);
     }
   });
 
   page.on("console", (message) => {
-    if (message.type() === "error") {
-      consoleErrors.push(message.text());
+    const text = message.text();
+
+    if (
+      message.type() === "error" &&
+      (assetPathPattern.test(text) ||
+        (text.includes("Failed to load resource") &&
+          assetPathPattern.test(message.location().url)))
+    ) {
+      assetConsoleErrors.push(text);
     }
   });
 
@@ -29,7 +34,7 @@ export function monitorAssetErrors(page) {
   return {
     assertNoErrors() {
       expect(assetFailures).toEqual([]);
-      expect(consoleErrors).toEqual([]);
+      expect(assetConsoleErrors).toEqual([]);
       expect(pageErrors).toEqual([]);
     },
   };

@@ -11,10 +11,10 @@ test.describe("Validate updates", () => {
     });
     const lastUpdatedText = await locator.textContent();
 
-    let found = false;
-    found = validateTariffDate(0, lastUpdatedText);
-    found ||= validateTariffDate(1, lastUpdatedText);
-    found ||= validateTariffDate(2, lastUpdatedText);
+    const found =
+      validateTariffDate(0, lastUpdatedText) ||
+      validateTariffDate(1, lastUpdatedText) ||
+      validateTariffDate(2, lastUpdatedText);
 
     expect(found).toBeTruthy();
   });

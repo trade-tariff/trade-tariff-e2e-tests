@@ -1,6 +1,52 @@
 import { test, expect } from "@playwright/test";
 import LoginPage from "../pages/loginPage.js";
 import DownloadHelper from "../utils/downloadHelper.js";
+import { assertExchangeRateCsv } from "../utils/exchangeRateCsv.js";
+
+const SAMPLE_CODES = ["EUR", "USD", "JPY"];
+
+/**
+ * Read major currency rates from the online table so the CSV can be
+ * cross-checked against the same page the user sees.
+ */
+async function sampleRatesFromTable(page, codes = SAMPLE_CODES) {
+  const rows = await page.locator("table tbody tr").evaluateAll((trs) =>
+    trs.map((tr) => {
+      const cells = [...tr.querySelectorAll("td")].map((td) =>
+        td.textContent.replace(/\s+/g, " ").trim(),
+      );
+      return {
+        code: cells[2] ?? "",
+        rate: cells[3] ?? "",
+      };
+    }),
+  );
+
+  const samples = {};
+  for (const code of codes) {
+    const match = rows.find((row) => row.code === code);
+    expect(match, `online table missing ${code}`).toBeTruthy();
+    expect(match.rate, `online table missing rate for ${code}`).toBeTruthy();
+    samples[code] = match.rate;
+  }
+  return samples;
+}
+
+async function assertCsvMatchesTable(page, breadcrumbName, sampleRates) {
+  await page
+    .getByRole("link", { name: breadcrumbName })
+    .click({ timeout: 20000 });
+  await DownloadHelper.downloadAndVerify(
+    page,
+    page.getByRole("link", { name: /CSV\s+\d+\.?\d*\s*KB/ }).first(),
+    /\.csv$/i,
+    {
+      assertBody: (body) => {
+        assertExchangeRateCsv(body, sampleRates);
+      },
+    },
+  );
+}
 
 test.describe("Exchange Rates", () => {
   test("Validating monthly exchange rates", async ({ page }) => {
@@ -9,13 +55,9 @@ test.describe("Exchange Rates", () => {
     await expect(
       page.getByRole("columnheader", { name: "Country/territory" }),
     ).toBeVisible({ timeout: 20000 });
-    await page
-      .getByRole("link", { name: "Monthly exchange rates" })
-      .click({ timeout: 20000 });
-    await DownloadHelper.downloadAndVerify(
-      page,
-      page.getByRole("link", { name: /CSV\s+\d+\.?\d*\s*KB/ }).first(),
-    );
+
+    const sampleRates = await sampleRatesFromTable(page);
+    await assertCsvMatchesTable(page, "Monthly exchange rates", sampleRates);
   });
 
   test("Validating average exchange rates", async ({ page }) => {
@@ -27,13 +69,9 @@ test.describe("Exchange Rates", () => {
     await expect(
       page.getByRole("columnheader", { name: "Country/territory" }),
     ).toBeVisible({ timeout: 20000 });
-    await page
-      .getByRole("link", { name: "Average exchange rates" })
-      .click({ timeout: 20000 });
-    await DownloadHelper.downloadAndVerify(
-      page,
-      page.getByRole("link", { name: /CSV\s+\d+\.?\d*\s*KB/ }).first(),
-    );
+
+    const sampleRates = await sampleRatesFromTable(page);
+    await assertCsvMatchesTable(page, "Average exchange rates", sampleRates);
   });
 
   test("Validating spot exchange rates", async ({ page }) => {
@@ -45,10 +83,8 @@ test.describe("Exchange Rates", () => {
     await expect(
       page.getByRole("columnheader", { name: "Country/territory" }),
     ).toBeVisible({ timeout: 20000 });
-    await page.getByRole("link", { name: "Spot exchange rates" }).click();
-    await DownloadHelper.downloadAndVerify(
-      page,
-      page.getByRole("link", { name: /CSV\s+\d+\.?\d*\s*KB/ }).first(),
-    );
+
+    const sampleRates = await sampleRatesFromTable(page);
+    await assertCsvMatchesTable(page, "Spot exchange rates", sampleRates);
   });
 });

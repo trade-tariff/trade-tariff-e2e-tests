@@ -32,6 +32,15 @@ export function filenameFromDisposition(disposition, finalUrl, originalUrl) {
 }
 
 export default class DownloadHelper {
+  /**
+   * @param {import('@playwright/test').Page} page
+   * @param {import('@playwright/test').Locator} linkLocator
+   * @param {RegExp} [filenamePattern]
+   * @param {{
+   *   timeout?: number,
+   *   assertBody?: (body: Buffer, meta: { filename: string, url: string, finalUrl: string }) => void | Promise<void>,
+   * }} [options]
+   */
   static async downloadAndVerify(
     page,
     linkLocator,
@@ -39,6 +48,7 @@ export default class DownloadHelper {
     options = {},
   ) {
     const timeout = options.timeout ?? 30_000;
+    const assertBody = options.assertBody;
 
     await expect(linkLocator).toBeVisible();
 
@@ -63,7 +73,7 @@ export default class DownloadHelper {
       `expected a file download but received HTML (${contentType}) from ${absoluteUrl} (final: ${response.url()})`,
     ).toBe(false);
 
-    const body = await response.body();
+    const body = Buffer.from(await response.body());
     expect(
       body.byteLength,
       `download body was empty for ${absoluteUrl}`,
@@ -76,6 +86,14 @@ export default class DownloadHelper {
       absoluteUrl,
     );
     expect(filename).toMatch(filenamePattern);
+
+    if (assertBody) {
+      await assertBody(body, {
+        filename,
+        url: absoluteUrl,
+        finalUrl: response.url(),
+      });
+    }
 
     return {
       body,

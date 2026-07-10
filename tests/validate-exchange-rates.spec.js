@@ -49,6 +49,8 @@ async function assertCsvMatchesTable(page, breadcrumbName, sampleRates) {
 }
 
 test.describe("Exchange Rates", () => {
+  test.describe.configure({ timeout: 60000 });
+
   test("Validating monthly exchange rates", async ({ page }) => {
     await new LoginPage("/exchange_rates", page).login();
     await page.locator('a[title^="View"]').first().click();

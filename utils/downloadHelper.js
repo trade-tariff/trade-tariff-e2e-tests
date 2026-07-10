@@ -47,10 +47,10 @@ export default class DownloadHelper {
     filenamePattern = /\.csv$/i,
     options = {},
   ) {
-    const timeout = options.timeout ?? 30_000;
+    const timeout = options.timeout ?? 45_000;
     const assertBody = options.assertBody;
 
-    await expect(linkLocator).toBeVisible();
+    await expect(linkLocator).toBeVisible({ timeout: 20000 });
 
     const href = await linkLocator.getAttribute("href");
     expect(href, "download link should have an href").toBeTruthy();

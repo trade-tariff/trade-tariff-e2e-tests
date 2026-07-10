@@ -21,4 +21,33 @@ test.describe("Find Commodity", () => {
     await quotaMeasure.first().scrollIntoViewIfNeeded();
     await expect(quotaMeasure.first()).toBeVisible();
   });
+
+  // Guards against regressions where autocomplete init fails (e.g. debounce@3
+  // rejecting a boolean third argument) and falls back to a plain text input
+  // with no suggestion list.
+  test("shows accessible autocomplete suggestions while typing", async ({
+    page,
+  }) => {
+    await new LoginPage("/find_commodity", page).login();
+
+    const keywordSearch = page.getByRole("radio", {
+      name: "Keyword or commodity code search",
+    });
+    if (await keywordSearch.count()) {
+      await keywordSearch.check();
+    }
+
+    const searchInput = page.locator('input[role="combobox"]');
+    await expect(searchInput).toBeVisible();
+
+    await searchInput.click();
+    await searchInput.pressSequentially("tomato", { delay: 40 });
+
+    await expect(
+      page.getByRole("listbox").getByRole("option").first(),
+    ).toBeVisible({ timeout: 10_000 });
+    await expect(
+      page.getByRole("option", { name: /tomato/i }).first(),
+    ).toBeVisible();
+  });
 });

@@ -1,18 +1,18 @@
 {
   "author": "William Fish <william.michael.fish@gmail.com>",
   "devDependencies": {
-    "@aws-sdk/client-cognito-identity-provider": "^3.1078.0",
-    "@aws-sdk/client-s3": "^3.1077.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.1086.0",
+    "@aws-sdk/client-s3": "^3.1086.0",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "1.61",
     "ajv": "^8.20.0",
     "cheerio": "^1.2.0",
     "dotenv": "^17.4.2",
-    "eslint": "^10.6.0",
+    "eslint": "^10.7.0",
     "globals": "^17.7.0",
     "jsona": "^1.14.0",
-    "mailparser": "^3.9.12",
-    "prettier": "^3.9.4"
+    "mailparser": "^3.9.14",
+    "prettier": "^3.9.5"
   },
   "license": "MIT",
   "main": "index.js",

@@ -4,9 +4,7 @@ import {
   ListObjectsV2Command,
   S3Client,
 } from "@aws-sdk/client-s3";
-import { URL } from "url";
 import { simpleParser } from "mailparser";
-import * as cheerio from "cheerio";
 
 export default class EmailFetcher {
   constructor(bucket, prefix = "", region = "eu-west-2") {
@@ -42,9 +40,9 @@ export default class EmailFetcher {
         emailData &&
         emailData.to.toLowerCase().includes(this.targetRecipient.toLowerCase())
       ) {
-        const whitelistedLinks = this.getWhitelistedLinks(emailData);
-        if (whitelistedLinks.length > 0) {
-          emailData.whitelistedLinks = whitelistedLinks;
+        const code = this.extractCode(emailData);
+        if (code) {
+          emailData.code = code;
           email = emailData;
           break;
         }
@@ -91,36 +89,11 @@ export default class EmailFetcher {
     }
   }
 
-  extractLinks(emailObj) {
+  extractCode(emailObj) {
     if (!emailObj || !emailObj.body) return [];
-    const $ = cheerio.load(emailObj.body);
-    const anchorLinks = $("a")
-      .map((_i, el) => $(el).attr("href"))
-      .get()
-      .filter(Boolean);
-    const plainLinks = [
-      ...emailObj.body.matchAll(/(https?:\/\/[^\s<>"']+)/gi),
-    ].map((m) => m[1]);
+    const codeRegex = /(\d{6})/;
+    const emailCode = [...emailObj.body.matchAll(codeRegex)].map((m) => m[1]);
 
-    return [...new Set([...anchorLinks, ...plainLinks])];
-  }
-
-  getWhitelistedLinks(emailObj) {
-    const encodedEmail = encodeURIComponent(this.targetRecipient).replace(
-      /[-/\\^$*+?.()|[\]{}]/g,
-      "\\$&",
-    );
-    const callbackRegex = new RegExp(
-      `^(?:https?:\\/\\/)?(?:id\\.dev|id\\.staging)\\.trade-tariff\\.service\\.gov\\.uk\\/passwordless\\/callback\\?email=${encodedEmail}&token=[a-f0-9]{64}&consumer=myott$`,
-    );
-    const allLinks = this.extractLinks(emailObj);
-    return allLinks.filter((link) => {
-      try {
-        return callbackRegex.test(new URL(link).href);
-      } catch (error) {
-        console.log(`Invalid URL in email`, error);
-        return false;
-      }
-    });
+    return emailCode;
   }
 }

@@ -35,7 +35,8 @@ export default class SubscribePage {
       await this.emailInput().fill(this.email_address);
       await this.click(this.continueButton());
       await this.waitForEmail();
-      await this.verifyPasswordlessLinkFromEmail();
+      await this.enterCodeFromEmail();
+      await this.click(this.continueButton());
       expect(this.page.url()).toContain("/subscriptions/preferences/new");
 
       // Signed in, we can now set preferences
@@ -81,17 +82,14 @@ export default class SubscribePage {
     throw new Error("No email received within the timeout period");
   }
 
-  async verifyPasswordlessLinkFromEmail() {
-    if (
-      !this.email ||
-      !this.email.whitelistedLinks ||
-      this.email.whitelistedLinks.length === 0
-    ) {
-      throw new Error("No valid email links found");
+  async enterCodeFromEmail() {
+    if (!this.email || !this.email.code) {
+      throw new Error("No OTP code found");
     }
 
-    const link = this.email.whitelistedLinks[0];
-    await this.page.goto(link);
+    const code = this.email.code;
+    await this.otpFirstDigitInput().click();
+    await this.otpFirstDigitInput().pressSequentially(code);
   }
 
   async click(locator) {
@@ -107,6 +105,10 @@ export default class SubscribePage {
 
   emailInput() {
     return this.page.locator('input[name="passwordless_form[email]"]');
+  }
+
+  otpFirstDigitInput() {
+    return this.page.locator('input[aria-label="Digit 1 of 6"]');
   }
 
   continueButton() {

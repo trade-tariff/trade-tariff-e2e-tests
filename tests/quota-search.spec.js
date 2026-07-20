@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 import { test, expect } from "../fixtures.js";
 import LoginPage from "../pages/loginPage.js";
+=======
+import { test, expect } from "@playwright/test";
+import BasicAuthLoginPage from "../pages/basicAuthLoginPage.js";
+>>>>>>> d342e38 (feat: add dev-hub e2e tests)
 
 test.describe("Search for quotas", () => {
   test("Validate UK quota Search Results", async ({ page }) => {
-    await new LoginPage("/quota_search", page).login();
+    await new BasicAuthLoginPage("/quota_search", page).login();
 
     await expect(
       page.getByRole("heading", { name: "Search for quotas" }),

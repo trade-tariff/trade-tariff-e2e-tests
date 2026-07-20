@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 import { test, expect } from "../fixtures.js";
 import LoginPage from "../pages/loginPage.js";
+=======
+import { test, expect } from "@playwright/test";
+import BasicAuthLoginPage from "../pages/basicAuthLoginPage.js";
+>>>>>>> d342e38 (feat: add dev-hub e2e tests)
 
 test.describe("Duty Calculator Integration", () => {
   test("Validating the duty calculator", async ({ page }) => {
-    await new LoginPage("/commodities/0702001007", page).login();
+    await new BasicAuthLoginPage("/commodities/0702001007", page).login();
 
     // Navigate through the import date step
     await page

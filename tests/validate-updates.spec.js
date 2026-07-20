@@ -1,10 +1,10 @@
-import { test, expect } from "../fixtures.js";
-import LoginPage from "../pages/loginPage.js";
+import { adminTest as test, expect } from "../fixtures.js";
+import BasicAuthLoginPage from "../pages/basicAuthLoginPage.js";
 import validateTariffDate from "../utils/tariffDate.js";
 
 test.describe("Validate updates", () => {
   test.skip("Validating updates are happening", async ({ page }) => {
-    await new LoginPage("/find_commodity", page).login();
+    await new BasicAuthLoginPage("/find_commodity", page).login();
 
     const locator = page.locator("#last-updated-at p", {
       hasText: /Last updated:\s+\d{1,2}\s\w+\s\d{4}/,

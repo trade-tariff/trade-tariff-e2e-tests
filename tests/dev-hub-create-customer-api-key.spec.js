@@ -7,6 +7,13 @@ import { test, expect } from "@playwright/test";
 // Full journey: log in with passwordless email, create an API key, call the API,
 // revoke the key, confirm the key no longer works, delete the key, sign out.
 test("creating, using and revoking a customer api key", async ({ page }) => {
+  if (process.env.SKIP_DEV_HUB === "true") {
+    test.skip(
+      "Skipping dev-hub test as per environment variable"
+    );
+    return;
+  }
+
   const loginPage = new DevHubLoginPage(page);
   const dashboardPage = new DashboardPage(page);
 

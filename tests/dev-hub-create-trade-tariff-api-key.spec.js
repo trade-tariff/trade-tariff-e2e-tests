@@ -1,5 +1,5 @@
-import DevHubLoginPage from "../pages/devHubLoginPage";
-import { TradeTariffKeysPage } from "../pages/tradeTariffKeysPage";
+import DevHubLoginPage from "../pages/devHubLoginPage.js";
+import { TradeTariffKeysPage } from "../pages/tradeTariffKeysPage.js";
 
 import { test, expect } from "@playwright/test";
 
@@ -8,9 +8,7 @@ import { test, expect } from "@playwright/test";
 // delete it, sign out.
 test("creating, revoking and deleting a trade tariff key", async ({ page }) => {
   if (process.env.SKIP_DEV_HUB === "true") {
-    test.skip(
-      "Skipping dev-hub test as per environment variable"
-    );
+    test.skip("Skipping dev-hub test as per environment variable");
     return;
   }
 

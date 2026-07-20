@@ -283,9 +283,12 @@ export default class DashboardPage {
 
   revokedDate() {
     const today = new Date();
-    const day = today.getDate();
-    const month = today.toLocaleString("default", { month: "long" });
-    const year = today.getFullYear();
+    const day = today.getUTCDate();
+    const month = today.toLocaleString("en-GB", {
+      month: "long",
+      timeZone: "UTC",
+    });
+    const year = today.getUTCFullYear();
 
     return `Revoked on ${day} ${month} ${year}`;
   }

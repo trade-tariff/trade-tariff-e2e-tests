@@ -3,12 +3,17 @@ import { TradeTariffKeysPage } from "../pages/tradeTariffKeysPage";
 
 import { test, expect } from "@playwright/test";
 
-/**
- * Full Trade Tariff key lifecycle: log in, create a key (including intermediate success page with
- * description, scopes, secret and token guidance), revoke it, delete it, sign out.
- * Same flow in dev and staging (see DevHubLoginPage).
- */
+// Full Trade Tariff key lifecycle: log in, create a key (including intermediate
+// success page with description, scopes, secret and token guidance), revoke it,
+// delete it, sign out.
 test("creating, revoking and deleting a trade tariff key", async ({ page }) => {
+  if (process.env.SKIP_DEV_HUB === "true") {
+    test.skip(
+      "Skipping dev-hub test as per environment variable"
+    );
+    return;
+  }
+
   const loginPage = new DevHubLoginPage(page);
   const tradeTariffKeysPage = new TradeTariffKeysPage(page);
 

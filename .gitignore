@@ -9,3 +9,13 @@ node_modules/
 /.pre-commit-config-nix.yaml
 
 .env
+
+# OS Generated files
+._*
+.DS_Store
+.Spotlight-V100
+.Trash*
+.TemporaryItems
+.fseventsd
+Thumbs.db
+.apdisk

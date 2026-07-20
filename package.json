@@ -7,7 +7,7 @@
     "@playwright/test": "1.61",
     "ajv": "^8.20.0",
     "dotenv": "^17.4.2",
-    "eslint": "^10.6.0",
+    "eslint": "^10.7.0",
     "globals": "^17.7.0",
     "jsona": "^1.14.0",
     "mailparser": "^3.9.14",
@@ -19,6 +19,7 @@
   "repository": "git@github.com:trade-tariff/trade-tariff-e2e-tests.git",
   "scripts": {
     "fix": "eslint . --ext .js --fix",
+    "fmt": "prettier -w .",
     "lint": "eslint . --ext .js",
     "test": "playwright test --workers 2",
     "test-development": "PLAYWRIGHT_ENV=development playwright test",

@@ -1,9 +1,9 @@
 import { test, expect } from "@playwright/test";
-import LoginPage from "../pages/loginPage.js";
+import BasicAuthLoginPage from "../pages/basicAuthLoginPage.js";
 
 test.describe("Browse Page", () => {
   test("Validating browsing the tariff", async ({ page }) => {
-    await new LoginPage("/browse", page).login();
+    await new BasicAuthLoginPage("/browse", page).login();
 
     await page.getByRole("link", { name: "Section 1: Live animals;" }).click();
     await page.getByRole("link", { name: "Chapter 01: Live animals" }).click();

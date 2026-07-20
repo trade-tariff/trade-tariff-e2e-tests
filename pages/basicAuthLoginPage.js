@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 
-export default class LoginPage {
+export default class BasicAuthLoginPage {
   constructor(url, page, skipProduction = false) {
     this.page = page;
 

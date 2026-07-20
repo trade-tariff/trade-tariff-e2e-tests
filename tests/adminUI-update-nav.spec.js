@@ -1,10 +1,10 @@
 import { test, expect } from "@playwright/test";
-import LoginPage from "../pages/loginPage.js";
+import BasicAuthLoginPage from "../pages/basicAuthLoginPage.js";
 
 test.describe("Admin updates", () => {
   test.beforeEach(
     async ({ page }) =>
-      await new LoginPage(process.env.ADMIN_URL, page, true).login(),
+      await new BasicAuthLoginPage(process.env.ADMIN_URL, page, true).login(),
   );
 
   test("Validate UK updates", async ({ page }) => {

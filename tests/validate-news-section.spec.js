@@ -1,10 +1,10 @@
 // create or open your test file tests/validate-news-section.spec.js
 import { test, expect } from "@playwright/test";
-import LoginPage from "../pages/loginPage.js";
+import BasicAuthLoginPage from "../pages/basicAuthLoginPage.js";
 
 test.describe("News Section", () => {
   test("Validating News section", async ({ page }) => {
-    await new LoginPage("/news", page).login();
+    await new BasicAuthLoginPage("/news", page).login();
     // Navigate to the news section
     await expect(
       page.getByRole("heading", { name: "Trade tariff news bulletin" }),
@@ -27,7 +27,7 @@ test.describe("News Section", () => {
   });
 
   test("Validating live issues section", async ({ page }) => {
-    await new LoginPage("/news", page).login();
+    await new BasicAuthLoginPage("/news", page).login();
     // Click on the view live issues log
     const liveIssueLink = page.getByRole("link", {
       name: "View live issues log",

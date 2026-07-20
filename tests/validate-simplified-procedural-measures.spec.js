@@ -1,11 +1,11 @@
 import { test, expect } from "@playwright/test";
-import LoginPage from "../pages/loginPage.js";
+import BasicAuthLoginPage from "../pages/basicAuthLoginPage.js";
 
 test.describe("Simplified Procedural Measures", () => {
   test("allows switching between the by date and by code views", async ({
     page,
   }) => {
-    await new LoginPage("/simplified_procedure_value", page).login();
+    await new BasicAuthLoginPage("/simplified_procedure_value", page).login();
 
     await page.selectOption("select", { index: 1 });
     await page

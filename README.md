@@ -2,7 +2,9 @@
 
 [![Check Production](https://github.com/trade-tariff/trade-tariff-e2e-tests/actions/workflows/check-production.yml/badge.svg)](https://github.com/trade-tariff/trade-tariff-e2e-tests/actions/workflows/check-production.yml)
 
-> Remember to install pre-commit hooks before making any changes to the repository.
+> [!NOTE]
+> Remember to install pre-commit hooks before making any changes to the
+> repository; `pre-commit install -f`
 
 Playwright suite used to validate the end to end functionality of the OTT Service
 
@@ -11,7 +13,8 @@ The OTT service essentially answers two principle questions:
 1. What am I trading?
 2. What measures apply to me?
 
-This suite validates some of the core journeys that help the user answer these questions.
+This suite validates some of the core journeys that help the user answer these
+questions.
 
 The OTT frontend is accessible on the following URLs:
 
@@ -34,7 +37,7 @@ Implementation details for the frontend and backend can be reviewed, here:
 
 ```bash
 yarn install
-yarn run playwright install
+yarn run playwright install --with-deps chromium
 ```
 
 ## Running tests

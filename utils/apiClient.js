@@ -27,8 +27,20 @@ export class ApiClient {
 
     const res = await this.handleResponse(handleOpts);
 
-    this.status = res?.status ?? null;
-    this.json = await res?.json();
+    this.status = res.status ?? null;
+
+    let parsedJSON = null;
+
+    try {
+      const contentTypeHeader = res.headers.get("content-type") ?? "";
+      if (contentTypeHeader.includes("application/json")) {
+        parsedJSON = await res.json();
+      }
+    } catch {
+      parsedJSON = null;
+    }
+
+    this.json = parsedJSON;
   }
 
   assertSuccessful() {

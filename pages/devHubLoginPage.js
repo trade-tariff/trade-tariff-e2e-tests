@@ -6,18 +6,23 @@ import S3Lock from "../utils/s3Lock.js";
 export default class DevHubLoginPage {
   constructor(page) {
     this.page = page;
-    this.fetcher = new EmailFetcher(DevHubLoginPage.INBOUND_BUCKET, "inbound/");
+    this.fetcher = new EmailFetcher(
+      DevHubLoginPage.PASSWORDLESS_SES_BUCKET,
+      "inbound/",
+    );
     this.locker = new S3Lock(
-      DevHubLoginPage.INBOUND_BUCKET,
-      DevHubLoginPage.LOCK_KEY,
+      DevHubLoginPage.PASSWORDLESS_SES_BUCKET,
+      DevHubLoginPage.PASSWORDLESS_LOCK_KEY_FPO,
     );
   }
 
   static STARTING_URL =
     process.env.URL ?? "https://hub.dev.trade-tariff.service.gov.uk";
-  static EMAIL_ADDRESS = process.env.PASSWORDLESS_SUBSCRIPTIONS_EMAIL ?? "";
-  static INBOUND_BUCKET = process.env.PASSWORDLESS_SES_BUCKET ?? "";
-  static LOCK_KEY = process.env.PASSWORDLESS_LOCK_KEY_FPO ?? "";
+  static PASSWORDLESS_SUBSCRIPTIONS_EMAIL =
+    process.env.PASSWORDLESS_SUBSCRIPTIONS_EMAIL ?? "";
+  static PASSWORDLESS_SES_BUCKET = process.env.PASSWORDLESS_SES_BUCKET ?? "";
+  static PASSWORDLESS_LOCK_KEY_FPO =
+    process.env.PASSWORDLESS_LOCK_KEY_FPO ?? "";
   static EMAIL_WAIT_MS = 20 * 1000;
   static EMAIL_POLL_MS = 1 * 1000;
   static TIMEOUT_MS = 15000;
@@ -35,9 +40,12 @@ export default class DevHubLoginPage {
   requireEnvForLogin() {
     const missing = [];
     if (!DevHubLoginPage.STARTING_URL) missing.push("URL");
-    if (!DevHubLoginPage.EMAIL_ADDRESS) missing.push("EMAIL_ADDRESS");
-    if (!DevHubLoginPage.INBOUND_BUCKET) missing.push("INBOUND_BUCKET");
-    if (!DevHubLoginPage.LOCK_KEY) missing.push("LOCK_KEY");
+    if (!DevHubLoginPage.PASSWORDLESS_SUBSCRIPTIONS_EMAIL)
+      missing.push("PASSWORDLESS_SUBSCRIPTIONS_EMAIL");
+    if (!DevHubLoginPage.PASSWORDLESS_SES_BUCKET)
+      missing.push("PASSWORDLESS_SES_BUCKET");
+    if (!DevHubLoginPage.PASSWORDLESS_LOCK_KEY_FPO)
+      missing.push("PASSWORDLESS_LOCK_KEY_FPO ");
     if (missing.length > 0) {
       throw new Error(
         `Missing required environment variables for login: ${missing.join(", ")}. ` +
@@ -68,7 +76,7 @@ export default class DevHubLoginPage {
           ? specificInput
           : this.page.locator('input[type="email"]').first();
 
-      await emailInput.fill(DevHubLoginPage.EMAIL_ADDRESS);
+      await emailInput.fill(DevHubLoginPage.PASSWORDLESS_SUBSCRIPTIONS_EMAIL);
       await this.continueButton().click();
       await this.waitForEmail();
       await this.enterCodeFromEmail();

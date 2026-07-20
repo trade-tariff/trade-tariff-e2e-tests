@@ -1,11 +1,11 @@
 import { test, expect } from "@playwright/test";
-import LoginPage from "../pages/loginPage.js";
+import BasicAuthLoginPage from "../pages/basicAuthLoginPage.js";
 
 test.describe("Rules of origin Display", () => {
   test("Verify Rules of Origin are displayed for selected commodity", async ({
     page,
   }) => {
-    await new LoginPage("/commodities/0409000010", page).login();
+    await new BasicAuthLoginPage("/commodities/0409000010", page).login();
     await page
       .getByRole("combobox", { name: "Select or enter a country" })
       .click();

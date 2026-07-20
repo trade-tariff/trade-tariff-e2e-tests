@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import LoginPage from "../pages/loginPage.js";
+import BasicAuthLoginPage from "../pages/basicAuthLoginPage.js";
 import DownloadHelper from "../utils/downloadHelper.js";
 import { assertExchangeRateCsv } from "../utils/exchangeRateCsv.js";
 
@@ -50,7 +50,7 @@ async function assertCsvMatchesTable(page, breadcrumbName, sampleRates) {
 
 test.describe("Exchange Rates", () => {
   test("Validating monthly exchange rates", async ({ page }) => {
-    await new LoginPage("/exchange_rates", page).login();
+    await new BasicAuthLoginPage("/exchange_rates", page).login();
     await page.locator('a[title^="View"]').first().click();
     await expect(
       page.getByRole("columnheader", { name: "Country/territory" }),
@@ -61,7 +61,7 @@ test.describe("Exchange Rates", () => {
   });
 
   test("Validating average exchange rates", async ({ page }) => {
-    await new LoginPage("/exchange_rates", page).login();
+    await new BasicAuthLoginPage("/exchange_rates", page).login();
     await page
       .getByRole("link", { name: "Currency exchange average rates" })
       .click();
@@ -75,7 +75,7 @@ test.describe("Exchange Rates", () => {
   });
 
   test("Validating spot exchange rates", async ({ page }) => {
-    await new LoginPage("/exchange_rates", page).login();
+    await new BasicAuthLoginPage("/exchange_rates", page).login();
     await page
       .getByRole("link", { name: "Currency exchange spot rates" })
       .click();

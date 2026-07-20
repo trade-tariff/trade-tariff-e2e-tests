@@ -1,9 +1,9 @@
 import { test, expect } from "@playwright/test";
-import LoginPage from "../pages/loginPage.js";
+import BasicAuthLoginPage from "../pages/basicAuthLoginPage.js";
 
 test.describe("Find Commodity", () => {
   test("searching commodity by reference", async ({ page }) => {
-    await new LoginPage("/find_commodity", page).login();
+    await new BasicAuthLoginPage("/find_commodity", page).login();
     await page.locator('input[role="combobox"]').fill("ricotta");
     await page.locator('input[role="combobox"]').press("Enter");
 
@@ -11,7 +11,7 @@ test.describe("Find Commodity", () => {
   });
 
   test("searching commodity by code", async ({ page }) => {
-    await new LoginPage("/find_commodity", page).login();
+    await new BasicAuthLoginPage("/find_commodity", page).login();
     await page.locator('input[role="combobox"]').fill("1701991000");
     await page.locator('input[role="combobox"]').press("Enter");
 
@@ -28,7 +28,7 @@ test.describe("Find Commodity", () => {
   test("shows accessible autocomplete suggestions while typing", async ({
     page,
   }) => {
-    await new LoginPage("/find_commodity", page).login();
+    await new BasicAuthLoginPage("/find_commodity", page).login();
 
     const keywordSearch = page.getByRole("radio", {
       name: "Keyword or commodity code search",

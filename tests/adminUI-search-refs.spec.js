@@ -1,10 +1,10 @@
 import { test, expect } from "@playwright/test";
-import LoginPage from "../pages/loginPage.js";
+import BasicAuthLoginPage from "../pages/basicAuthLoginPage.js";
 
 test.describe("Search References", () => {
   test.beforeEach(
     async ({ page }) =>
-      await new LoginPage(process.env.ADMIN_URL, page, true).login(),
+      await new BasicAuthLoginPage(process.env.ADMIN_URL, page, true).login(),
   );
 
   test("should display UK search references", async ({ page }) => {

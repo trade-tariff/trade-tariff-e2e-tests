@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import SubscriptionPage from "../pages/subscriptionPage.js";
-import LoginPage from "../pages/loginPage.js";
+import BasicAuthLoginPage from "../pages/basicAuthLoginPage.js";
 
 test.describe("MyOTT Subscription Flow E2E Test", () => {
   test("should complete passwordless subscription and unsubscription", async ({
@@ -23,7 +23,7 @@ test.describe("MyOTT Subscription Flow E2E Test", () => {
       return;
     }
 
-    await new LoginPage("/subscriptions/start", page).login();
+    await new BasicAuthLoginPage("/subscriptions/start", page).login();
     const subscribePage = new SubscriptionPage(page);
 
     await subscribePage.start();

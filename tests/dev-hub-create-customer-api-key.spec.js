@@ -8,9 +8,7 @@ import { test, expect } from "@playwright/test";
 // revoke the key, confirm the key no longer works, delete the key, sign out.
 test("creating, using and revoking a customer api key", async ({ page }) => {
   if (process.env.SKIP_DEV_HUB === "true") {
-    test.skip(
-      "Skipping dev-hub test as per environment variable"
-    );
+    test.skip("Skipping dev-hub test as per environment variable");
     return;
   }
 

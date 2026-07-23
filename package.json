@@ -11,7 +11,7 @@
     "globals": "^17.7.0",
     "jsona": "^1.14.0",
     "mailparser": "^3.9.14",
-    "prettier": "^3.9.4"
+    "prettier": "^3.9.5"
   },
   "license": "MIT",
   "main": "index.js",

@@ -1,5 +1,4 @@
-// create or open your test file tests/validate-news-section.spec.js
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../fixtures.js";
 import BasicAuthLoginPage from "../pages/basicAuthLoginPage.js";
 
 test.describe("News Section", () => {

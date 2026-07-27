@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../fixtures.js";
 import BasicAuthLoginPage from "../pages/basicAuthLoginPage.js";
 import { monitorAssetErrors } from "../utils/assetErrorMonitor.js";
 
@@ -9,7 +9,7 @@ test.describe("Frontend assets", () => {
     const assetErrorMonitor = monitorAssetErrors(page);
 
     await new BasicAuthLoginPage("/find_commodity", page).login();
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("load");
 
     assetErrorMonitor.assertNoErrors();
 
@@ -18,5 +18,7 @@ test.describe("Frontend assets", () => {
         name: "Look up commodity codes, import duties, taxes and controls",
       }),
     ).toBeVisible();
+
+    assetErrorMonitor.assertNoErrors();
   });
 });

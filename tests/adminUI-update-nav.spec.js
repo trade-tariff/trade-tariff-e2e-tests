@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { adminTest as test, expect } from "../fixtures.js";
 import BasicAuthLoginPage from "../pages/basicAuthLoginPage.js";
 
 test.describe("Admin updates", () => {

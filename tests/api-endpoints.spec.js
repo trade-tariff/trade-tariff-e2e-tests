@@ -1,5 +1,5 @@
 import Jsona from "jsona";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../fixtures.js";
 import { validateApi } from "../utils/validateApi";
 
 const apiPaths = [

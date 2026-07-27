@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../fixtures.js";
 import BasicAuthLoginPage from "../pages/basicAuthLoginPage.js";
 import DownloadHelper from "../utils/downloadHelper.js";
 import { assertExchangeRateCsv } from "../utils/exchangeRateCsv.js";
@@ -32,13 +32,14 @@ async function sampleRatesFromTable(page, codes = SAMPLE_CODES) {
   return samples;
 }
 
-async function assertCsvMatchesTable(page, breadcrumbName, sampleRates) {
-  await page
-    .getByRole("link", { name: breadcrumbName })
-    .click({ timeout: 20000 });
+async function assertCsvMatchesTable(page, sampleRates) {
   await DownloadHelper.downloadAndVerify(
     page,
-    page.getByRole("link", { name: /CSV\s+\d+\.?\d*\s*KB/ }).first(),
+    page
+      .getByRole("link", {
+        name: /CSV(?:\s+file)?\s*\(?\d+(?:\.\d+)?\s*KB\)?/,
+      })
+      .first(),
     /\.csv$/i,
     {
       assertBody: (body) => {
@@ -57,34 +58,28 @@ test.describe("Exchange Rates", () => {
     ).toBeVisible({ timeout: 20000 });
 
     const sampleRates = await sampleRatesFromTable(page);
-    await assertCsvMatchesTable(page, "Monthly exchange rates", sampleRates);
+    await assertCsvMatchesTable(page, sampleRates);
   });
 
   test("Validating average exchange rates", async ({ page }) => {
-    await new BasicAuthLoginPage("/exchange_rates", page).login();
-    await page
-      .getByRole("link", { name: "Currency exchange average rates" })
-      .click();
+    await new BasicAuthLoginPage("/exchange_rates/average", page).login();
     await page.locator('a[title^="View"]').first().click();
     await expect(
       page.getByRole("columnheader", { name: "Country/territory" }),
     ).toBeVisible({ timeout: 20000 });
 
     const sampleRates = await sampleRatesFromTable(page);
-    await assertCsvMatchesTable(page, "Average exchange rates", sampleRates);
+    await assertCsvMatchesTable(page, sampleRates);
   });
 
   test("Validating spot exchange rates", async ({ page }) => {
-    await new BasicAuthLoginPage("/exchange_rates", page).login();
-    await page
-      .getByRole("link", { name: "Currency exchange spot rates" })
-      .click();
+    await new BasicAuthLoginPage("/exchange_rates/spot", page).login();
     await page.locator('a[title^="View"]').first().click();
     await expect(
       page.getByRole("columnheader", { name: "Country/territory" }),
     ).toBeVisible({ timeout: 20000 });
 
     const sampleRates = await sampleRatesFromTable(page);
-    await assertCsvMatchesTable(page, "Spot exchange rates", sampleRates);
+    await assertCsvMatchesTable(page, sampleRates);
   });
 });

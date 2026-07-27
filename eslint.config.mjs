@@ -4,7 +4,7 @@ import { defineConfig } from "eslint/config";
 
 export default defineConfig([
   {
-    files: ["**/*.{js,mjs,cjs}"],
+    files: ["tests/*.{js}", "utils/*.{js}", "pages/*.{js}"],
     plugins: {
       js,
     },

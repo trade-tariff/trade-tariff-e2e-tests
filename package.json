@@ -23,7 +23,8 @@
     "test": "playwright test --workers 2",
     "test-development": "PLAYWRIGHT_ENV=development playwright test",
     "test-production": "PLAYWRIGHT_ENV=production playwright test",
-    "test-staging": "PLAYWRIGHT_ENV=staging playwright test"
+    "test-staging": "PLAYWRIGHT_ENV=staging playwright test",
+    "test-unit": "node --test utils/*.test.js pages/*.test.js"
   },
   "version": "1.0.0"
 }

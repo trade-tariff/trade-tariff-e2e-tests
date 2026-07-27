@@ -24,6 +24,7 @@ jobs:
             ${{ runner.os }}-pre-commit-
       - run: pip install pre-commit
       - run: npm install -g yarn && yarn
+      - run: yarn test-unit
       - run: pre-commit run --all-files
 
   run-tests:

@@ -3,6 +3,9 @@ import EmailFetcher from "../utils/emailFetcher.js";
 import S3Lock from "../utils/s3Lock.js";
 
 import { expect } from "@playwright/test";
+import { setTimeout as sleep } from "node:timers/promises";
+
+const EMAIL_POLL_DELAYS_MS = [250, 250, 500, 500, 1000];
 
 export default class SubscribePage {
   constructor(page) {
@@ -20,15 +23,13 @@ export default class SubscribePage {
       process.env.PASSWORDLESS_POOL_NAME,
       process.env.AWS_DEFAULT_REGION,
     );
+    this.sleep = sleep;
   }
 
   async start() {
     // Acquire lock to ensure no other tests are running concurrently
     await this.locker.withLock(async () => {
       await this.cleaner.deleteUserByEmail(this.email_address);
-
-      // Sleep 1 second to ensure the user is deleted before proceeding
-      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Navigate through subscription verification flow
       await this.click(this.startNowButton());
@@ -66,6 +67,7 @@ export default class SubscribePage {
 
     this.startTime = Date.now();
     this.email = undefined;
+    let poll = 0;
 
     while (Date.now() - this.startTime < timeout) {
       const email = await this.fetcher.getLatestEmail();
@@ -75,7 +77,10 @@ export default class SubscribePage {
         break;
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 1 * 1000));
+      const delay =
+        EMAIL_POLL_DELAYS_MS[Math.min(poll, EMAIL_POLL_DELAYS_MS.length - 1)];
+      await this.sleep(delay);
+      poll += 1;
     }
     if (this.email) return this.email;
 

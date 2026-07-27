@@ -4,6 +4,7 @@ import {
   ListUsersCommand,
   AdminDeleteUserCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
+import { setTimeout as sleep } from "node:timers/promises";
 
 export default class CognitoUserCleaner {
   constructor(userPoolName, region = "eu-west-2") {
@@ -37,10 +38,40 @@ export default class CognitoUserCleaner {
       });
 
       await this.client.send(deleteCommand);
+      await this.waitUntilUserDeleted(poolId, email);
       return true;
     } catch (error) {
       console.error(`Error deleting user`, error);
+      throw error;
     }
+  }
+
+  async waitUntilUserDeleted(poolId, email, options = {}) {
+    const maxWaitMs = options.maxWaitMs ?? 5_000;
+    const pollIntervalMs = options.pollIntervalMs ?? 250;
+    const wait = options.sleep ?? sleep;
+    const maxPolls = Math.ceil(maxWaitMs / pollIntervalMs);
+
+    for (let poll = 0; poll <= maxPolls; poll++) {
+      const command = new ListUsersCommand({
+        UserPoolId: poolId,
+        Filter: `email = "${email}"`,
+        Limit: 1,
+      });
+      const { Users } = await this.client.send(command);
+
+      if (!Users || Users.length === 0) {
+        return;
+      }
+
+      if (poll < maxPolls) {
+        await wait(pollIntervalMs);
+      }
+    }
+
+    throw new Error(
+      `Cognito user '${email}' still exists after ${maxWaitMs}ms`,
+    );
   }
 
   async getUserPoolIdByName(name) {

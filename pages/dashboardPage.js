@@ -151,6 +151,8 @@ export default class DashboardPage {
   }
 
   assertDashboardPage() {
+    console.log(this.page)
+
     expect(this.page.url()).toMatch(
       /\/organisations\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
     );

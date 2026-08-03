@@ -60,21 +60,16 @@ export default class DevHubLoginPage {
   }
 
   async loginViaPasswordlessEmail() {
-    await this.page.goto(DevHubLoginPage.STARTING_URL);
-    await this.startNowButton().waitFor({ state: "visible" });
-    await this.startNowButton().click();
-    await this.waitForLoginEntryPoint();
-    await this.waitForEmailInput();
-    this.assertOnLoginPage();
-
     await this.locker.withLock(async () => {
-      const specificInput = this.page.locator(
+      await this.page.goto(DevHubLoginPage.STARTING_URL);
+      await this.startNowButton().waitFor({ state: "visible" });
+      await this.startNowButton().click();
+      await this.waitForLoginEntryPoint();
+      this.assertOnLoginPage();
+
+      const emailInput = this.page.locator(
         'input[name="passwordless_form[email]"]',
       );
-      const emailInput =
-        (await specificInput.count()) > 0
-          ? specificInput
-          : this.page.locator('input[type="email"]').first();
 
       await emailInput.fill(DevHubLoginPage.PASSWORDLESS_SUBSCRIPTIONS_EMAIL);
       await this.continueButton().click();
@@ -89,41 +84,16 @@ export default class DevHubLoginPage {
   }
 
   async waitForLoginEntryPoint() {
-    const specificEmailInput = this.page.locator(
+    const emailInput = this.page.locator(
       'input[name="passwordless_form[email]"]',
     );
-    const genericEmailInput = this.page.locator('input[type="email"]').first();
 
-    await Promise.race([
-      specificEmailInput.waitFor({
-        state: "visible",
-        timeout: DevHubLoginPage.TIMEOUT_MS,
-      }),
-      genericEmailInput.waitFor({
-        state: "visible",
-        timeout: DevHubLoginPage.TIMEOUT_MS,
-      }),
-      this.page.waitForURL(/\/dev\/login|\/login/, {
-        timeout: DevHubLoginPage.TIMEOUT_MS,
-      }),
-    ]);
-  }
+    await emailInput.waitFor({
+      state: "visible",
+      timeout: DevHubLoginPage.TIMEOUT_MS,
+    });
 
-  async waitForEmailInput() {
-    const specificEmailInput = this.page.locator(
-      'input[name="passwordless_form[email]"]',
-    );
-    const genericEmailInput = this.page.locator('input[type="email"]').first();
-    await Promise.race([
-      specificEmailInput.waitFor({
-        state: "visible",
-        timeout: DevHubLoginPage.TIMEOUT_MS,
-      }),
-      genericEmailInput.waitFor({
-        state: "visible",
-        timeout: DevHubLoginPage.TIMEOUT_MS,
-      }),
-    ]);
+    console.log("hello");
   }
 
   startNowButton() {

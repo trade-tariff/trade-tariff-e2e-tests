@@ -70,7 +70,7 @@ test.describe("Find Commodity", () => {
       await route.continue();
     });
 
-    await new LoginPage("/find_commodity", page).login();
+    await new BasicAuthLoginPage("/find_commodity", page).login();
 
     const keywordSearch = page.getByRole("radio", {
       name: "Keyword or commodity code search",

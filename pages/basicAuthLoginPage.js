@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 
-export default class LoginPage {
+export default class BasicAuthLoginPage {
   constructor(url, page, skipProduction = false) {
     this.page = page;
 
@@ -9,11 +9,13 @@ export default class LoginPage {
     );
     this.isAdmin = !!url.match(/admin/);
     this.isFrontend = !!url.startsWith("/");
+    this.isDevHub = !!url.match(/hub/);
     this.url = url;
     this.password = process.env.BASIC_PASSWORD;
     this.skipProduction = skipProduction;
     this.skipAdmin = process.env.SKIP_ADMIN === "true";
     this.skipFrontend = process.env.SKIP_FRONTEND === "true";
+    this.skipDevHub = process.env.SKIP_DEV_HUB === "true";
   }
 
   async login() {
@@ -29,6 +31,11 @@ export default class LoginPage {
 
     if (this.isFrontend && this.skipFrontend) {
       test.skip("Skipping frontend test");
+      return;
+    }
+
+    if (this.isDevHub && this.skipDevHub) {
+      test.skip("");
       return;
     }
 

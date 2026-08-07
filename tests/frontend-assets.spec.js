@@ -1,5 +1,5 @@
 import { test, expect } from "../fixtures.js";
-import LoginPage from "../pages/loginPage.js";
+import BasicAuthLoginPage from "../pages/basicAuthLoginPage.js";
 import { monitorAssetErrors } from "../utils/assetErrorMonitor.js";
 
 test.describe("Frontend assets", () => {
@@ -8,8 +8,10 @@ test.describe("Frontend assets", () => {
   }) => {
     const assetErrorMonitor = monitorAssetErrors(page);
 
-    await new LoginPage("/find_commodity", page).login();
+    await new BasicAuthLoginPage("/find_commodity", page).login();
     await page.waitForLoadState("load");
+
+    assetErrorMonitor.assertNoErrors();
 
     await expect(
       page.getByRole("heading", {

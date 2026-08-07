@@ -1,5 +1,5 @@
 import { test, expect } from "../fixtures.js";
-import LoginPage from "../pages/loginPage.js";
+import BasicAuthLoginPage from "../pages/basicAuthLoginPage.js";
 import DownloadHelper from "../utils/downloadHelper.js";
 import { assertExchangeRateCsv } from "../utils/exchangeRateCsv.js";
 
@@ -51,7 +51,7 @@ async function assertCsvMatchesTable(page, sampleRates) {
 
 test.describe("Exchange Rates", () => {
   test("Validating monthly exchange rates", async ({ page }) => {
-    await new LoginPage("/exchange_rates", page).login();
+    await new BasicAuthLoginPage("/exchange_rates", page).login();
     await page.locator('a[title^="View"]').first().click();
     await expect(
       page.getByRole("columnheader", { name: "Country/territory" }),
@@ -62,7 +62,7 @@ test.describe("Exchange Rates", () => {
   });
 
   test("Validating average exchange rates", async ({ page }) => {
-    await new LoginPage("/exchange_rates/average", page).login();
+    await new BasicAuthLoginPage("/exchange_rates/average", page).login();
     await page.locator('a[title^="View"]').first().click();
     await expect(
       page.getByRole("columnheader", { name: "Country/territory" }),
@@ -73,7 +73,7 @@ test.describe("Exchange Rates", () => {
   });
 
   test("Validating spot exchange rates", async ({ page }) => {
-    await new LoginPage("/exchange_rates/spot", page).login();
+    await new BasicAuthLoginPage("/exchange_rates/spot", page).login();
     await page.locator('a[title^="View"]').first().click();
     await expect(
       page.getByRole("columnheader", { name: "Country/territory" }),

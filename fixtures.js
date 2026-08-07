@@ -1,6 +1,7 @@
 import { expect, test as base } from "@playwright/test";
 
 import { createAuthenticatedState } from "./utils/authState.js";
+import { createIdentityAuthenticatedState } from "./utils/loggedInDevHubState.js";
 import { wafBypassHeaders } from "./utils/wafBypassHeaders.js";
 
 const EMPTY_STORAGE_STATE = { cookies: [], origins: [] };
@@ -39,6 +40,35 @@ function createAuthenticatedTest({ enabled, baseURL, url }) {
   });
 }
 
+function createDevHubAuthenticatedTest({ enabled, baseURL }) {
+  const workerStorageState = enabled
+    ? [
+      async ({ browser }, use) => {
+        const state = await createIdentityAuthenticatedState(browser, {
+          enabled: true,
+          baseURL: process.env.URL,
+          extraHTTPHeaders: wafBypassHeaders(),
+        });
+        await use(state);
+      },
+      { scope: "worker" },
+    ]
+    : [
+        async ({ browserName }, use) => {
+          void browserName;
+          await use(EMPTY_STORAGE_STATE);
+        },
+        { scope: "worker" },
+      ];
+
+  return base.extend({
+    storageState: async ({ workerStorageState }, use) => {
+      await use(workerStorageState);
+    },
+    workerStorageState,
+  });
+};
+
 export const test = createAuthenticatedTest({
   enabled:
     !isProduction &&
@@ -57,5 +87,12 @@ export const adminTest = createAuthenticatedTest({
   baseURL: process.env.ADMIN_URL,
   url: process.env.ADMIN_URL,
 });
+
+export const devHubTest = createDevHubAuthenticatedTest({
+  enabled:
+    !isProduction &&
+    process.env.SKIP_DEV_HUB !== "true",
+  baseURL: process.env.DEV_HUB_URL,
+})
 
 export { expect };

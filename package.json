@@ -18,8 +18,9 @@
   "name": "trade-tariff-e2e-tests",
   "repository": "git@github.com:trade-tariff/trade-tariff-e2e-tests.git",
   "scripts": {
-    "fix": "eslint . --ext .js --fix",
-    "lint": "eslint . --ext .js",
+    "fix": "eslint . --fix",
+    "fmt": "prettier -w .",
+    "lint": "eslint .",
     "test": "playwright test --workers 2",
     "test-development": "PLAYWRIGHT_ENV=development playwright test",
     "test-production": "PLAYWRIGHT_ENV=production playwright test",

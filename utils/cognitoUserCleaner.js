@@ -71,9 +71,7 @@ export default class CognitoUserCleaner {
       }
     }
 
-    throw new Error(
-      `Cognito user still exists after ${maxWaitMs}ms`,
-    );
+    throw new Error(`Cognito user still exists after ${maxWaitMs}ms`);
   }
 
   async getUserPoolIdByName(name) {

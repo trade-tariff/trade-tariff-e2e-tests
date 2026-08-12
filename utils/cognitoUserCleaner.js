@@ -41,7 +41,9 @@ export default class CognitoUserCleaner {
       await this.waitUntilUserDeleted(poolId, email);
       return true;
     } catch (error) {
-      console.error(`Error deleting user`, error);
+      console.error("Error deleting user from Cognito", {
+        name: error?.name,
+      });
       throw error;
     }
   }
@@ -70,7 +72,7 @@ export default class CognitoUserCleaner {
     }
 
     throw new Error(
-      `Cognito user '${email}' still exists after ${maxWaitMs}ms`,
+      `Cognito user still exists after ${maxWaitMs}ms`,
     );
   }
 

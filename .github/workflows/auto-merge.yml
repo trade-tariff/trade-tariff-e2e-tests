@@ -11,7 +11,7 @@ on:
       - submitted
   workflow_run:
     workflows:
-      - 'development'
+      - "development"
     types:
       - completed
 

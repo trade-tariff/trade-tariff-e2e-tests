@@ -13,13 +13,13 @@
     "@smithy/types" "^4.16.1"
     tslib "^2.6.2"
 
-"@aws-sdk/client-cognito-identity-provider@^3.1098.0":
-  version "3.1098.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/client-cognito-identity-provider/-/client-cognito-identity-provider-3.1098.0.tgz#83ed1aaa358275faeae143979b50b1a71693b521"
-  integrity sha512-yL5TSPJSfMmjp6YaklPm1qwbLMDgV2CT24RfjimPzB1+gpLjg7oATRc3AK427EsX1dhWQ56i2A+kK2PldxBzAA==
+"@aws-sdk/client-cognito-identity-provider@^3.1104.0":
+  version "3.1104.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/client-cognito-identity-provider/-/client-cognito-identity-provider-3.1104.0.tgz#34e5e8ce35837b57d0ee4119d97ca469578635b1"
+  integrity sha512-eRfKXZq6M6dhgCcsHUWo1YTJTPwXAqkMuEiueNneqAKtjpDmONCMMVLE0SVeJu11i2qWkFsT0coYT4B46mmtvA==
   dependencies:
-    "@aws-sdk/core" "^3.977.3"
-    "@aws-sdk/credential-provider-node" "^3.972.75"
+    "@aws-sdk/core" "^3.977.6"
+    "@aws-sdk/credential-provider-node" "^3.972.78"
     "@aws-sdk/types" "^3.974.2"
     "@smithy/core" "^3.31.1"
     "@smithy/fetch-http-handler" "^5.6.13"
@@ -44,7 +44,7 @@
     "@smithy/types" "^4.16.1"
     tslib "^2.6.2"
 
-"@aws-sdk/core@^3.977.3", "@aws-sdk/core@^3.977.6", "@aws-sdk/core@^3.977.7":
+"@aws-sdk/core@^3.977.6", "@aws-sdk/core@^3.977.7":
   version "3.977.7"
   resolved "https://registry.yarnpkg.com/@aws-sdk/core/-/core-3.977.7.tgz#6cb9237e44faf3ac9d10556b67645f9867ecde11"
   integrity sha512-I88Iov89NVmjSmJLKSv7Cn9M2J+a2942OkA8nZCbz+sl4ZeY4zEOcoLOrbt1GRfQ8zEQKnjAJdXixA3J/p1fDQ==
@@ -113,7 +113,7 @@
     "@smithy/types" "^4.16.1"
     tslib "^2.6.2"
 
-"@aws-sdk/credential-provider-node@^3.972.75", "@aws-sdk/credential-provider-node@^3.972.78":
+"@aws-sdk/credential-provider-node@^3.972.78":
   version "3.972.79"
   resolved "https://registry.yarnpkg.com/@aws-sdk/credential-provider-node/-/credential-provider-node-3.972.79.tgz#aaf898e177e3dec573229b5eaa278d9129adb859"
   integrity sha512-RIw5dof1EHkWubrZzPC941CDtnFG1iAXsxbFgLkhdYZXHc4icU13c/uxSMI0J5eUx9bxa7LjfpdjfClBB1QsDA==

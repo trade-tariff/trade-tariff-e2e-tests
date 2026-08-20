@@ -1,7 +1,5 @@
 name: Check Production
 on:
-  schedule:
-    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 jobs:

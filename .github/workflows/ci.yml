@@ -1,6 +1,9 @@
-name: development
+name: Run E2E (Staging)
+
 on:
-  push: { branches: [main] }
+  push:
+    branches:
+      - main
   pull_request:
   workflow_dispatch:
 
@@ -30,7 +33,7 @@ jobs:
   run-tests:
     uses: trade-tariff/trade-tariff-tools/.github/workflows/e2e-tests.yml@main
     with:
-      test-environment: development
+      test-environment: staging
       ref: ${{ github.sha }}
     secrets:
       basic_password: ${{ secrets.BASIC_PASSWORD }}

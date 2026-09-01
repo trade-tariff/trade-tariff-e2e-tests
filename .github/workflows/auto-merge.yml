@@ -11,7 +11,7 @@ on:
       - submitted
   workflow_run:
     workflows:
-      - "development"
+      - "Run E2E (Staging)"
     types:
       - completed
 
@@ -35,6 +35,6 @@ jobs:
     with:
       label: low-risk
       merge-method: rebase
-      required-workflow: development.yml
+      required-workflow: ci.yml
     secrets:
       github-token: ${{ secrets.PULL_REQUEST_PAT }}

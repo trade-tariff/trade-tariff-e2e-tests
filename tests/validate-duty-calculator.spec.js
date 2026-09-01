@@ -40,6 +40,15 @@ test.describe("Duty Calculator Integration", () => {
       .fill("1000");
     await page.getByRole("button", { name: "Continue" }).click();
 
+    // Navigate through the document codes step
+    await expect(
+      page.getByRole("heading", {
+        name: "Do you have any of the following documents?",
+      }),
+    ).toBeVisible();
+    await page.getByRole("radio", { name: "None of the above" }).check();
+    await page.getByRole("button", { name: "Continue" }).click();
+
     // Navigate through the Check your answers step
     await page.getByRole("link", { name: "Calculate import duties" }).click();
 

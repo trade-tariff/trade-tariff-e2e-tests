@@ -13,18 +13,18 @@
     "@smithy/types" "^4.17.2"
     tslib "^2.6.2"
 
-"@aws-sdk/client-cognito-identity-provider@^3.1114.0":
-  version "3.1114.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/client-cognito-identity-provider/-/client-cognito-identity-provider-3.1114.0.tgz#0476cfe51eaa1cef56a72ede8151abec9e3d7f0e"
-  integrity sha512-9qZ6/IzODtOREDjNEuyNdKoPefMjyMUSmtYi7gWSoK6WOS9D0N9A53oEyNzPOIAA6K15kWSwXq+Vy+mt4CfcFA==
+"@aws-sdk/client-cognito-identity-provider@^3.1119.0":
+  version "3.1119.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/client-cognito-identity-provider/-/client-cognito-identity-provider-3.1119.0.tgz#8d9c57fede3495340918d8918ef15322f38de4fa"
+  integrity sha512-OoEwZhxyIVaUV1eqZ7jSWLt7RPnYLh3I3c0P+2dIWiVuObd9wwSDhyye9v6tna77R2qZAhbPF0hAxZUrk4sxbQ==
   dependencies:
-    "@aws-sdk/core" "^3.977.8"
-    "@aws-sdk/credential-provider-node" "^3.972.80"
-    "@aws-sdk/types" "^3.974.4"
-    "@smithy/core" "^3.31.1"
-    "@smithy/fetch-http-handler" "^5.6.13"
-    "@smithy/node-http-handler" "^4.9.13"
-    "@smithy/types" "^4.16.1"
+    "@aws-sdk/core" "^3.977.9"
+    "@aws-sdk/credential-provider-node" "^3.972.81"
+    "@aws-sdk/types" "^3.974.5"
+    "@smithy/core" "^3.33.3"
+    "@smithy/fetch-http-handler" "^5.7.2"
+    "@smithy/node-http-handler" "^4.11.3"
+    "@smithy/types" "^4.17.2"
     tslib "^2.6.2"
 
 "@aws-sdk/client-s3@^3.1114.0":
@@ -113,10 +113,10 @@
     "@smithy/types" "^4.17.2"
     tslib "^2.6.2"
 
-"@aws-sdk/credential-provider-node@^3.972.80":
-  version "3.972.81"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/credential-provider-node/-/credential-provider-node-3.972.81.tgz#f803fd0627194e94d673416820577c38a2684b2e"
-  integrity sha512-Rml+WitoFvXmv6JZ18U/xGdGDGGvB/mOin0ya0lTnTrdC0Z1lrVxTYh7iNklZBcvcRMrs4DoEf6xy1KWyrLQQw==
+"@aws-sdk/credential-provider-node@^3.972.80", "@aws-sdk/credential-provider-node@^3.972.81":
+  version "3.972.82"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/credential-provider-node/-/credential-provider-node-3.972.82.tgz#9967ea14f708f9e3274ed334a07a550282556a32"
+  integrity sha512-znDkEOGXB8W3kG1LJUKP3foBZY/9qLM0eil/DxWXSp37XsdsRLQHE/d/OaCGGVgKpA6znR38h/+INk8do1FjiA==
   dependencies:
     "@aws-sdk/credential-provider-env" "^3.972.70"
     "@aws-sdk/credential-provider-http" "^3.972.72"

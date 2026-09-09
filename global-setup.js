@@ -1,14 +1,13 @@
 import path from "path";
 import dotenv from "dotenv";
 import { wafBypassHeaders } from "./utils/wafBypassHeaders.js";
+import { waitUntilReady } from "./utils/waitUntilReady.js";
 
 const playwrightEnv = process.env.PLAYWRIGHT_ENV ?? "development";
 const envFile = path.resolve(__dirname, `.env.${playwrightEnv}`);
 dotenv.config({ path: envFile });
 dotenv.config({ path: ".env" });
 
-const MAX_ATTEMPTS = 20;
-const INTERVAL_MS = 5_000;
 const BODY_PREVIEW_CHARS = 500;
 const RESPONSE_HEADERS = [
   "cache-control",
@@ -50,6 +49,20 @@ function logHealthcheck(event) {
   console.log(`healthcheck_response ${JSON.stringify(event)}`);
 }
 
+async function logAttempt(event) {
+  const { res, error, ...rest } = event;
+
+  logHealthcheck({
+    timestamp: new Date().toISOString(),
+    ...rest,
+    ...(res && {
+      headers: responseHeaders(res),
+      bodyPreview: await responseBodyPreview(res),
+    }),
+    ...(error && { error: { name: error.name, message: error.message } }),
+  });
+}
+
 export default async function globalSetup() {
   const baseUrl = process.env.BASE_URL;
 
@@ -57,52 +70,18 @@ export default async function globalSetup() {
     throw new Error("BASE_URL is not set");
   }
 
-  const healthUrl = `${baseUrl}/healthcheck`;
+  // The shallow /healthcheck only proves the frontend process itself is up.
+  // It can pass while a backend dependency (e.g. mid ECS rolling-deploy) is
+  // still returning 5xx, which previously surfaced as a burst of unrelated
+  // test timeouts across the suite rather than a clear setup failure.
+  // Polling a real backend-dependent endpoint too closes that gap.
+  await waitUntilReady(`${baseUrl}/healthcheck`, {
+    headers: wafBypassHeaders(),
+    onAttempt: logAttempt,
+  });
 
-  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    const startedAt = Date.now();
-
-    try {
-      const res = await fetch(healthUrl, { headers: wafBypassHeaders() });
-      const event = {
-        timestamp: new Date().toISOString(),
-        attempt,
-        maxAttempts: MAX_ATTEMPTS,
-        url: healthUrl,
-        ok: res.ok,
-        status: res.status,
-        statusText: res.statusText,
-        durationMs: Date.now() - startedAt,
-        headers: responseHeaders(res),
-        bodyPreview: await responseBodyPreview(res),
-      };
-
-      logHealthcheck(event);
-
-      if (res.ok) {
-        return;
-      }
-    } catch (err) {
-      logHealthcheck({
-        timestamp: new Date().toISOString(),
-        attempt,
-        maxAttempts: MAX_ATTEMPTS,
-        url: healthUrl,
-        ok: false,
-        durationMs: Date.now() - startedAt,
-        error: {
-          name: err.name,
-          message: err.message,
-        },
-      });
-    }
-
-    if (attempt < MAX_ATTEMPTS) {
-      await new Promise((r) => setTimeout(r, INTERVAL_MS));
-    }
-  }
-
-  throw new Error(
-    `Service at ${healthUrl} not ready after ${MAX_ATTEMPTS} attempts`,
-  );
+  await waitUntilReady(`${baseUrl}/uk/api/news/items`, {
+    headers: wafBypassHeaders(),
+    onAttempt: logAttempt,
+  });
 }

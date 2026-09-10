@@ -16,8 +16,13 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: onCI,
   retries: onCI ? 2 : 0,
-  workers: onCI ? 1 : undefined,
-  reporter: "html",
+  // GitHub's public ubuntu-24.04 runners have 4 vCPUs. Lower this first if the
+  // suite starts failing on service-side throttling rather than real defects.
+  workers: onCI ? 4 : undefined,
+  // The HTML report is never uploaded from CI, so building it there is wasted
+  // work and leaves an unreadable dot-per-test log. list names each test and
+  // its duration, which is also what makes slow tests findable.
+  reporter: onCI ? "list" : "html",
   use: {
     trace: "off",
     baseURL: process.env.BASE_URL,

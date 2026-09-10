@@ -1,4 +1,3 @@
-// create or open your test file tests/validate-news-section.spec.js
 import { test, expect } from "../fixtures.js";
 import LoginPage from "../pages/loginPage.js";
 
@@ -9,21 +8,11 @@ test.describe("News Section", () => {
     await expect(
       page.getByRole("heading", { name: "Trade tariff news bulletin" }),
     ).toBeVisible({ timeout: 10000 });
-    await page
-      .locator("//a[normalize-space()='2024']")
-      .click({ timeout: 2000 }); //Filter by previous year
+    await page.locator("//a[normalize-space()='2024']").click(); //Filter by previous year
     await page.locator("//a[normalize-space()='Trade news']").click(); //Filter by collection
-    await expect(page).toHaveURL(/\/news\/collections\/trade_news\/2024/); //  // Validate the URL
-    //Check at least one news item is showing
-    await page.waitForSelector(".news-item");
-    // get the news items
-    const newsItems = page.locator(".news-item");
-    const count = await newsItems.count();
-    if (count > 0) {
-      await expect(newsItems.first()).toBeVisible();
-    } else {
-      console.log("No news items found, skipping validation.");
-    }
+    await expect(page).toHaveURL(/\/news\/collections\/trade_news\/2024/);
+
+    await expect(page.locator(".news-item").first()).toBeVisible();
   });
 
   test("Validating live issues section", async ({ page }) => {
@@ -34,14 +23,19 @@ test.describe("News Section", () => {
     });
     await expect(liveIssueLink).toBeVisible({ timeout: 10000 });
     await liveIssueLink.click();
-    // Validate the live issues log page
-    const issueRows = page.locator(".news-item, tr");
-    const count = await issueRows.count();
-    // Check if there are any live issues
-    if (count > 0) {
-      await expect(issueRows.first()).toBeVisible();
-    } else {
-      console.log("No live issues found, skipping validation.");
-    }
+
+    await expect(page).toHaveURL(/\/live_issues/);
+    await expect(
+      page.getByRole("heading", { name: "Live issues log" }),
+    ).toBeVisible();
+
+    // The log legitimately empties out, so accept either the list or the
+    // empty state, but require one of them to actually render.
+    await expect(
+      page
+        .locator(".live-issues__list")
+        .or(page.getByText("No live issues match the selected filters."))
+        .first(),
+    ).toBeVisible();
   });
 });

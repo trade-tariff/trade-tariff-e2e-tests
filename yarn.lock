@@ -13,13 +13,13 @@
     "@smithy/types" "^4.17.2"
     tslib "^2.6.2"
 
-"@aws-sdk/client-cognito-identity-provider@^3.1119.0":
-  version "3.1119.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/client-cognito-identity-provider/-/client-cognito-identity-provider-3.1119.0.tgz#8d9c57fede3495340918d8918ef15322f38de4fa"
-  integrity sha512-OoEwZhxyIVaUV1eqZ7jSWLt7RPnYLh3I3c0P+2dIWiVuObd9wwSDhyye9v6tna77R2qZAhbPF0hAxZUrk4sxbQ==
+"@aws-sdk/client-cognito-identity-provider@^3.1125.0":
+  version "3.1125.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/client-cognito-identity-provider/-/client-cognito-identity-provider-3.1125.0.tgz#2d529117fe0fa6f61db46ab0f2a5752dfea831d4"
+  integrity sha512-9FhvbIK9KrkLtpQo/mc8jSD9lQL+StUbeAFnLm99QObnlzXDAnSZpklSKH0fVWjrqPnwGe0vIdHF3A2iQ1KyzA==
   dependencies:
     "@aws-sdk/core" "^3.977.9"
-    "@aws-sdk/credential-provider-node" "^3.972.81"
+    "@aws-sdk/credential-provider-node" "^3.972.82"
     "@aws-sdk/types" "^3.974.5"
     "@smithy/core" "^3.33.3"
     "@smithy/fetch-http-handler" "^5.7.2"
@@ -113,7 +113,7 @@
     "@smithy/types" "^4.17.2"
     tslib "^2.6.2"
 
-"@aws-sdk/credential-provider-node@^3.972.81", "@aws-sdk/credential-provider-node@^3.972.82":
+"@aws-sdk/credential-provider-node@^3.972.82":
   version "3.972.83"
   resolved "https://registry.yarnpkg.com/@aws-sdk/credential-provider-node/-/credential-provider-node-3.972.83.tgz#f4e16b3a1d5d0237460c1b532de37eb6505985dc"
   integrity sha512-jdso7ejzfRnatxMUZK4S/U6KbaDPCvfIV4XL+IQAPFDBt5rj5Fq595euqlK8Le4lNCMFR9oUpt+1l0aMgaayOQ==

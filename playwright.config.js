@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { wafBypassHeaders } from "./utils/wafBypassHeaders.js";
 
 const playwrightEnv = process.env.PLAYWRIGHT_ENV ?? "development";
-const envFile = path.resolve(__dirname, `.env.${playwrightEnv}`);
+const envFile = path.resolve(import.meta.dirname, `.env.${playwrightEnv}`);
 dotenv.config({ path: envFile });
 dotenv.config({ path: ".env" });
 

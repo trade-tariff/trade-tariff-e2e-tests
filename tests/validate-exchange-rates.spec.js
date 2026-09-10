@@ -45,37 +45,23 @@ async function assertCsvMatchesTable(page, sampleRates) {
   );
 }
 
+const RATE_PAGES = [
+  { name: "monthly", path: "/exchange_rates" },
+  { name: "average", path: "/exchange_rates/average" },
+  { name: "spot", path: "/exchange_rates/spot" },
+];
+
 test.describe("Exchange Rates", () => {
-  test("Validating monthly exchange rates", async ({ page }) => {
-    await new LoginPage("/exchange_rates", page).login();
-    await page.locator('a[title^="View"]').first().click();
-    await expect(
-      page.getByRole("columnheader", { name: "Country/territory" }),
-    ).toBeVisible({ timeout: 20000 });
+  for (const { name, path } of RATE_PAGES) {
+    test(`Validating ${name} exchange rates`, async ({ page }) => {
+      await new LoginPage(path, page).login();
+      await page.locator('a[title^="View"]').first().click();
+      await expect(
+        page.getByRole("columnheader", { name: "Country/territory" }),
+      ).toBeVisible({ timeout: 20000 });
 
-    const sampleRates = await sampleRatesFromTable(page);
-    await assertCsvMatchesTable(page, sampleRates);
-  });
-
-  test("Validating average exchange rates", async ({ page }) => {
-    await new LoginPage("/exchange_rates/average", page).login();
-    await page.locator('a[title^="View"]').first().click();
-    await expect(
-      page.getByRole("columnheader", { name: "Country/territory" }),
-    ).toBeVisible({ timeout: 20000 });
-
-    const sampleRates = await sampleRatesFromTable(page);
-    await assertCsvMatchesTable(page, sampleRates);
-  });
-
-  test("Validating spot exchange rates", async ({ page }) => {
-    await new LoginPage("/exchange_rates/spot", page).login();
-    await page.locator('a[title^="View"]').first().click();
-    await expect(
-      page.getByRole("columnheader", { name: "Country/territory" }),
-    ).toBeVisible({ timeout: 20000 });
-
-    const sampleRates = await sampleRatesFromTable(page);
-    await assertCsvMatchesTable(page, sampleRates);
-  });
+      const sampleRates = await sampleRatesFromTable(page);
+      await assertCsvMatchesTable(page, sampleRates);
+    });
+  }
 });

@@ -1,12 +1,11 @@
 import { expect, test as base } from "@playwright/test";
 
 import { createAuthenticatedState } from "./utils/authState.js";
+import { isProductionEnvironment } from "./utils/environment.js";
 import { wafBypassHeaders } from "./utils/wafBypassHeaders.js";
 
 const EMPTY_STORAGE_STATE = { cookies: [], origins: [] };
-const isProduction = /www\.trade-tariff\.service\.gov\.uk/.test(
-  process.env.BASE_URL ?? "",
-);
+const isProduction = isProductionEnvironment();
 
 function createAuthenticatedTest({ enabled, baseURL, url }) {
   const workerStorageState = enabled

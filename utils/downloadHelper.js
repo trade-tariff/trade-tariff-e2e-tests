@@ -95,12 +95,6 @@ export default class DownloadHelper {
       });
     }
 
-    return {
-      body,
-      filename,
-      response,
-      suggestedFilename: () => filename,
-      failure: async () => null,
-    };
+    return { body, filename, response };
   }
 }

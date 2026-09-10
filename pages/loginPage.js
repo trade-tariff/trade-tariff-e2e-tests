@@ -1,12 +1,12 @@
 import { test } from "@playwright/test";
 
+import { isProductionEnvironment } from "../utils/environment.js";
+
 export default class LoginPage {
   constructor(url, page, skipProduction = false) {
     this.page = page;
 
-    this.isProduction = !!process.env.BASE_URL.match(
-      /www\.trade-tariff\.service\.gov\.uk/,
-    );
+    this.isProduction = isProductionEnvironment();
     this.isAdmin = !!url.match(/admin/);
     this.isFrontend = !!url.startsWith("/");
     this.url = url;

@@ -26,5 +26,6 @@
     "test-staging": "PLAYWRIGHT_ENV=staging playwright test",
     "test-unit": "node --test utils/*.test.js pages/*.test.js"
   },
+  "type": "module",
   "version": "1.0.0"
 }

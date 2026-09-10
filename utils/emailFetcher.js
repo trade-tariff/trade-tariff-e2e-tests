@@ -90,10 +90,10 @@ export default class EmailFetcher {
   }
 
   extractCode(emailObj) {
-    if (!emailObj || !emailObj.body) return [];
-    const codeRegex = /(\d{6})/;
-    const emailCode = [...emailObj.body.matchAll(codeRegex)].map((m) => m[1]);
+    if (!emailObj || !emailObj.body) return null;
 
-    return emailCode;
+    const match = emailObj.body.match(/\d{6}/);
+
+    return match ? match[0] : null;
   }
 }

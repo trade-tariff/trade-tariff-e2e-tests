@@ -20,7 +20,7 @@
   "scripts": {
     "fix": "eslint . --ext .js --fix",
     "lint": "eslint . --ext .js",
-    "test": "playwright test --workers 2",
+    "test": "playwright test",
     "test-development": "PLAYWRIGHT_ENV=development playwright test",
     "test-production": "PLAYWRIGHT_ENV=production playwright test",
     "test-staging": "PLAYWRIGHT_ENV=staging playwright test",

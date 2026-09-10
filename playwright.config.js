@@ -16,8 +16,15 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: onCI,
   retries: onCI ? 2 : 0,
-  workers: onCI ? 1 : undefined,
-  reporter: "html",
+  // 4 workers on a 4 vCPU runner is slower than 2, not faster: each worker
+  // drives its own Chromium, and the contention inflated total test time from
+  // ~44s to 62s and wall clock from 22.1s to 30.1s (run 34484210292). Measure
+  // before raising this.
+  workers: onCI ? 2 : undefined,
+  // The HTML report is never uploaded from CI, so building it there is wasted
+  // work and leaves an unreadable dot-per-test log. list names each test and
+  // its duration, which is also what makes slow tests findable.
+  reporter: onCI ? "list" : "html",
   use: {
     trace: "off",
     baseURL: process.env.BASE_URL,

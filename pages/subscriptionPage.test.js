@@ -6,7 +6,7 @@ import SubscriptionPage from "./subscriptionPage.js";
 test("polls quickly for the first incoming email retry", async () => {
   const delays = [];
   const email = {
-    code: ["123456"],
+    code: "123456",
     send_date: new Date(Date.now() + 1_000),
   };
   const responses = [undefined, email];

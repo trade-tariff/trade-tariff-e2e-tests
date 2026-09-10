@@ -2,15 +2,12 @@ import { test, expect } from "../fixtures.js";
 import LoginPage from "../pages/loginPage.js";
 import DownloadHelper from "../utils/downloadHelper.js";
 import { assertExchangeRateCsv } from "../utils/exchangeRateCsv.js";
+import { readSampleRates } from "../utils/exchangeRateTable.js";
 
 const SAMPLE_CODES = ["EUR", "USD", "JPY"];
 
-/**
- * Read major currency rates from the online table so the CSV can be
- * cross-checked against the same page the user sees.
- */
-async function sampleRatesFromTable(page, codes = SAMPLE_CODES) {
-  const rows = await page.locator("table tbody tr").evaluateAll((trs) =>
+function readRateRows(page) {
+  return page.locator("table tbody tr").evaluateAll((trs) =>
     trs.map((tr) => {
       const cells = [...tr.querySelectorAll("td")].map((td) =>
         td.textContent.replace(/\s+/g, " ").trim(),
@@ -21,15 +18,14 @@ async function sampleRatesFromTable(page, codes = SAMPLE_CODES) {
       };
     }),
   );
+}
 
-  const samples = {};
-  for (const code of codes) {
-    const match = rows.find((row) => row.code === code);
-    expect(match, `online table missing ${code}`).toBeTruthy();
-    expect(match.rate, `online table missing rate for ${code}`).toBeTruthy();
-    samples[code] = match.rate;
-  }
-  return samples;
+/**
+ * Read major currency rates from the online table so the CSV can be
+ * cross-checked against the same page the user sees.
+ */
+async function sampleRatesFromTable(page, codes = SAMPLE_CODES) {
+  return readSampleRates(() => readRateRows(page), codes);
 }
 
 async function assertCsvMatchesTable(page, sampleRates) {

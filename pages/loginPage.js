@@ -34,12 +34,27 @@ export default class LoginPage {
 
     await this.page.goto(this.url);
 
-    const loginLocator = this.page.locator("#basic-session-password-field");
+    await this.completeBasicAuth();
+  }
 
-    if ((await loginLocator.count()) > 0) {
-      await loginLocator.scrollIntoViewIfNeeded();
-      await loginLocator.fill(this.password);
-      await this.page.getByRole("button", { name: "Continue" }).click();
+  async completeBasicAuth() {
+    const passwordField = this.page.locator("#basic-session-password-field");
+
+    if (!(await passwordField.isVisible())) {
+      return;
     }
+
+    if (!this.password) {
+      throw new Error("BASIC_PASSWORD is required to sign in to this service");
+    }
+
+    await passwordField.scrollIntoViewIfNeeded();
+    await passwordField.fill(this.password);
+    await this.page.getByRole("button", { name: "Continue" }).click();
+
+    // Clicking Continue does not wait for the resulting navigation, so without
+    // this the caller can start asserting against the login page instead of
+    // the page it asked for.
+    await passwordField.waitFor({ state: "hidden" });
   }
 }

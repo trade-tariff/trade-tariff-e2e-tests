@@ -26,9 +26,7 @@ export default defineConfig({
   // its duration, which is also what makes slow tests findable.
   // The CloudWatch reporter is inert unless PUBLISH_METRICS is set, so this is
   // a no-op everywhere except the scheduled production run.
-  reporter: onCI
-    ? [["list"], ["./utils/cloudwatchReporter.js"]]
-    : "html",
+  reporter: onCI ? [["list"], ["./utils/cloudwatchReporter.js"]] : "html",
   use: {
     trace: "off",
     baseURL: process.env.BASE_URL,

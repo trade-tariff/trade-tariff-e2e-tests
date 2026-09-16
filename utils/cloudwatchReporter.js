@@ -17,9 +17,8 @@ function chunk(items, size) {
 // Imported lazily so that disabled runs — local development and every pull
 // request — never load the AWS SDK at all.
 async function createCloudWatchClient() {
-  const { CloudWatchClient, PutMetricDataCommand } = await import(
-    "@aws-sdk/client-cloudwatch"
-  );
+  const { CloudWatchClient, PutMetricDataCommand } =
+    await import("@aws-sdk/client-cloudwatch");
   const client = new CloudWatchClient({});
 
   return {
@@ -35,17 +34,28 @@ export default class CloudWatchReporter {
     this.environment =
       options.environment ?? process.env.PLAYWRIGHT_ENV ?? "development";
     this.createClient = options.createClient ?? createCloudWatchClient;
-    this.tests = [];
+    this.tests = new Map();
   }
 
-  // The list reporter owns stdout. Saying so keeps Playwright's output the
-  // same as it is today.
+  // This reporter never writes test output of its own; it only publishes
+  // metrics after the run finishes, so `list` remains the primary terminal
+  // reporter. The console.log lines below are a deliberate exception, not a
+  // contradiction: they are the post-deployment verification signal.
   printsToStdio() {
     return false;
   }
 
   onTestEnd(test, result) {
-    this.tests.push({
+    if (!this.enabled) {
+      return;
+    }
+
+    // Playwright calls onTestEnd once per attempt, not once per test: a
+    // flaky test with retries produces one call per retry, all sharing the
+    // same test.id. Keying by test.id and overwriting keeps only the last
+    // attempt, so a retried test contributes exactly one datum set instead
+    // of one per attempt.
+    this.tests.set(test.id, {
       spec: path.basename(test.location.file),
       // titlePath() is ["", project, specFile, ...describes, title], so index
       // 3 onwards is the describe path plus the test title. test.title alone
@@ -65,7 +75,7 @@ export default class CloudWatchReporter {
     try {
       const datums = buildMetricDatums({
         environment: this.environment,
-        tests: this.tests,
+        tests: [...this.tests.values()],
         run: { status: result.status, duration: result.duration },
       });
 
@@ -84,9 +94,7 @@ export default class CloudWatchReporter {
       // and swallowed deliberately; the missing-data alarm in the follow-up
       // work is what catches a persistently broken publisher. Covers failures
       // in datum construction, client creation, and publishing.
-      console.log(
-        `cloudwatch_metrics publish_failed ${error.name}: ${error.message}`,
-      );
+      console.log(`cloudwatch_metrics publish_failed ${error}`);
     }
   }
 }

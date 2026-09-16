@@ -49,7 +49,9 @@ export function buildMetricDatums({ environment, tests, run }) {
       dimension("Test", item.title),
     ];
 
-    datums.push(datum("TestDuration", "Milliseconds", item.duration, dimensions));
+    datums.push(
+      datum("TestDuration", "Milliseconds", item.duration, dimensions),
+    );
 
     // A skipped test has no pass/fail outcome. Emitting either 1 or 0 would
     // misreport it, so emit nothing and let TestsSkipped carry the signal.
@@ -62,8 +64,12 @@ export function buildMetricDatums({ environment, tests, run }) {
   const runDimensions = [dimension("Environment", environment)];
   const counts = tally(tests);
 
-  datums.push(datum("RunDuration", "Milliseconds", run.duration, runDimensions));
-  datums.push(datum("RunResult", "Count", run.status === "passed" ? 1 : 0, runDimensions));
+  datums.push(
+    datum("RunDuration", "Milliseconds", run.duration, runDimensions),
+  );
+  datums.push(
+    datum("RunResult", "Count", run.status === "passed" ? 1 : 0, runDimensions),
+  );
   datums.push(datum("TestsCompleted", "Count", tests.length, runDimensions));
   datums.push(datum("TestsPassed", "Count", counts.passed, runDimensions));
   datums.push(datum("TestsFailed", "Count", counts.failed, runDimensions));

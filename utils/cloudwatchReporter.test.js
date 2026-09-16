@@ -3,8 +3,13 @@ import test from "node:test";
 
 import CloudWatchReporter from "./cloudwatchReporter.js";
 
-function fakeTest(file, titlePath) {
+let nextTestId = 0;
+
+function fakeTest(file, titlePath, id) {
+  nextTestId += 1;
+
   return {
+    id: id ?? `test-${nextTestId}`,
     location: { file: `/repo/tests/${file}` },
     titlePath: () => ["", "chromium", file, ...titlePath],
   };
@@ -35,11 +40,14 @@ test("publishes datums to the agreed namespace", async () => {
   const client = recordingClient();
   const reporter = reporterWith(client);
 
-  reporter.onTestEnd(fakeTest("find-commodity.spec.js", ["Find Commodity", "searches"]), {
-    status: "passed",
-    duration: 1200,
-    retry: 0,
-  });
+  reporter.onTestEnd(
+    fakeTest("find-commodity.spec.js", ["Find Commodity", "searches"]),
+    {
+      status: "passed",
+      duration: 1200,
+      retry: 0,
+    },
+  );
   await reporter.onEnd({ status: "passed", duration: 45000 });
 
   assert.equal(client.calls.length, 1);
@@ -50,11 +58,14 @@ test("derives spec and test name from the title path", async () => {
   const client = recordingClient();
   const reporter = reporterWith(client);
 
-  reporter.onTestEnd(fakeTest("find-commodity.spec.js", ["Find Commodity", "searches"]), {
-    status: "passed",
-    duration: 1200,
-    retry: 0,
-  });
+  reporter.onTestEnd(
+    fakeTest("find-commodity.spec.js", ["Find Commodity", "searches"]),
+    {
+      status: "passed",
+      duration: 1200,
+      retry: 0,
+    },
+  );
   await reporter.onEnd({ status: "passed", duration: 45000 });
 
   const [duration] = client.calls[0].MetricData.filter(
@@ -101,7 +112,9 @@ test("swallows a publishing failure rather than failing the run", async () => {
     }),
   });
 
-  await assert.doesNotReject(() => reporter.onEnd({ status: "passed", duration: 2 }));
+  await assert.doesNotReject(() =>
+    reporter.onEnd({ status: "passed", duration: 2 }),
+  );
 });
 
 test("swallows a client construction failure", async () => {
@@ -111,7 +124,9 @@ test("swallows a client construction failure", async () => {
     },
   });
 
-  await assert.doesNotReject(() => reporter.onEnd({ status: "passed", duration: 2 }));
+  await assert.doesNotReject(() =>
+    reporter.onEnd({ status: "passed", duration: 2 }),
+  );
 });
 
 test("chunks datums so a large suite cannot be truncated", async () => {
@@ -131,7 +146,10 @@ test("chunks datums so a large suite cannot be truncated", async () => {
   assert.equal(client.calls.length, 2);
   assert.ok(client.calls.every((call) => call.MetricData.length <= 1000));
 
-  const total = client.calls.reduce((sum, call) => sum + call.MetricData.length, 0);
+  const total = client.calls.reduce(
+    (sum, call) => sum + call.MetricData.length,
+    0,
+  );
   assert.equal(total, 1207);
 });
 
@@ -142,8 +160,47 @@ test("swallows a failure while building datums", async () => {
   // buildMetricDatums iterates this; null makes it throw.
   reporter.tests = null;
 
-  await assert.doesNotReject(() => reporter.onEnd({ status: "passed", duration: 2 }));
+  await assert.doesNotReject(() =>
+    reporter.onEnd({ status: "passed", duration: 2 }),
+  );
   assert.equal(client.calls.length, 0);
+});
+
+test("collapses retried attempts of the same test into one datum set", async () => {
+  const client = recordingClient();
+  const reporter = reporterWith(client);
+  const test = fakeTest(
+    "flaky.spec.js",
+    ["Flaky", "sometimes fails"],
+    "flaky-test-id",
+  );
+
+  reporter.onTestEnd(test, { status: "failed", duration: 30000, retry: 0 });
+  reporter.onTestEnd(test, { status: "failed", duration: 30000, retry: 1 });
+  reporter.onTestEnd(test, { status: "passed", duration: 1200, retry: 2 });
+  await reporter.onEnd({ status: "passed", duration: 45000 });
+
+  assert.equal(client.calls.length, 1);
+
+  const [duration] = client.calls[0].MetricData.filter(
+    (datum) => datum.MetricName === "TestDuration",
+  );
+  assert.equal(duration.Value, 1200);
+
+  const [result] = client.calls[0].MetricData.filter(
+    (datum) => datum.MetricName === "TestResult",
+  );
+  assert.equal(result.Value, 1);
+
+  const [retries] = client.calls[0].MetricData.filter(
+    (datum) => datum.MetricName === "TestRetries",
+  );
+  assert.equal(retries.Value, 2);
+
+  const [completed] = client.calls[0].MetricData.filter(
+    (datum) => datum.MetricName === "TestsCompleted",
+  );
+  assert.equal(completed.Value, 1);
 });
 
 test("does not claim stdio, so the list reporter stays primary", () => {

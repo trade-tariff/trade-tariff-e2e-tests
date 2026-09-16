@@ -24,7 +24,11 @@ export default defineConfig({
   // The HTML report is never uploaded from CI, so building it there is wasted
   // work and leaves an unreadable dot-per-test log. list names each test and
   // its duration, which is also what makes slow tests findable.
-  reporter: onCI ? "list" : "html",
+  // The CloudWatch reporter is inert unless PUBLISH_METRICS is set, so this is
+  // a no-op everywhere except the scheduled production run.
+  reporter: onCI
+    ? [["list"], ["./utils/cloudwatchReporter.js"]]
+    : "html",
   use: {
     trace: "off",
     baseURL: process.env.BASE_URL,

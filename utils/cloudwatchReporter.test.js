@@ -135,6 +135,17 @@ test("chunks datums so a large suite cannot be truncated", async () => {
   assert.equal(total, 1207);
 });
 
+test("swallows a failure while building datums", async () => {
+  const client = recordingClient();
+  const reporter = reporterWith(client);
+
+  // buildMetricDatums iterates this; null makes it throw.
+  reporter.tests = null;
+
+  await assert.doesNotReject(() => reporter.onEnd({ status: "passed", duration: 2 }));
+  assert.equal(client.calls.length, 0);
+});
+
 test("does not claim stdio, so the list reporter stays primary", () => {
   const reporter = reporterWith(recordingClient());
   assert.equal(reporter.printsToStdio(), false);

@@ -62,13 +62,13 @@ export default class CloudWatchReporter {
       return;
     }
 
-    const datums = buildMetricDatums({
-      environment: this.environment,
-      tests: this.tests,
-      run: { status: result.status, duration: result.duration },
-    });
-
     try {
+      const datums = buildMetricDatums({
+        environment: this.environment,
+        tests: this.tests,
+        run: { status: result.status, duration: result.duration },
+      });
+
       const client = await this.createClient();
 
       for (const batch of chunk(datums, MAX_DATUMS_PER_CALL)) {
@@ -82,7 +82,8 @@ export default class CloudWatchReporter {
     } catch (error) {
       // Monitoring must never break the signal it monitors. This is logged
       // and swallowed deliberately; the missing-data alarm in the follow-up
-      // work is what catches a persistently broken publisher.
+      // work is what catches a persistently broken publisher. Covers failures
+      // in datum construction, client creation, and publishing.
       console.log(
         `cloudwatch_metrics publish_failed ${error.name}: ${error.message}`,
       );

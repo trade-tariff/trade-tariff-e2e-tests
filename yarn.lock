@@ -13,6 +13,21 @@
     "@smithy/types" "^4.17.2"
     tslib "^2.6.2"
 
+"@aws-sdk/client-cloudwatch@^3.1133.0":
+  version "3.1134.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/client-cloudwatch/-/client-cloudwatch-3.1134.0.tgz#b1cde4cd9be7f319f0fae22f3d299751d8b33c2d"
+  integrity sha512-rlipNXiSvN3AHu79iOWSb763v08AdYEq1fWcE6S9nnJH83OHOTSlRwsUmQC9kPwE8IWRvwllsolnr9VAoHsPlA==
+  dependencies:
+    "@aws-sdk/core" "^3.978.0"
+    "@aws-sdk/credential-provider-node" "^3.972.83"
+    "@aws-sdk/types" "^3.974.5"
+    "@smithy/core" "^3.33.3"
+    "@smithy/fetch-http-handler" "^5.7.2"
+    "@smithy/middleware-compression" "^4.6.2"
+    "@smithy/node-http-handler" "^4.11.3"
+    "@smithy/types" "^4.17.2"
+    tslib "^2.6.2"
+
 "@aws-sdk/client-cognito-identity-provider@^3.1129.0":
   version "3.1129.0"
   resolved "https://registry.yarnpkg.com/@aws-sdk/client-cognito-identity-provider/-/client-cognito-identity-provider-3.1129.0.tgz#98e7b2f6c93f3f2d4378ec192f957a8e22eac1cb"
@@ -391,6 +406,16 @@
     "@smithy/types" "^4.17.2"
     tslib "^2.6.2"
 
+"@smithy/middleware-compression@^4.6.2":
+  version "4.6.2"
+  resolved "https://registry.yarnpkg.com/@smithy/middleware-compression/-/middleware-compression-4.6.2.tgz#e56a8a77d3a2f6d2baaa3ac4b6202a641e954320"
+  integrity sha512-Q9d+luiRjyHT6kCL/9NyGpdZJgodh4vtvfHC6H8SqoVKrV2k9RoyI9/IloVfdCYks3/2DIi7BsYYLcda5KZS0A==
+  dependencies:
+    "@smithy/core" "^3.33.2"
+    "@smithy/types" "^4.17.2"
+    fflate "0.8.3"
+    tslib "^2.6.2"
+
 "@smithy/node-http-handler@^4.11.3":
   version "4.11.3"
   resolved "https://registry.yarnpkg.com/@smithy/node-http-handler/-/node-http-handler-4.11.3.tgz#27e91a61b6de8a13e9b552f22975d7dd369cb397"
@@ -687,6 +712,11 @@ fast-uri@^3.0.1:
   version "3.1.7"
   resolved "https://registry.yarnpkg.com/fast-uri/-/fast-uri-3.1.7.tgz#743157d957f3cbb4c65310e033dc2ad4ad7dc60a"
   integrity sha512-dOvZVzjdZdz7phd9v6jCbwxrBW3fK6n8Rc0CtdmM4bumzMnxywBYhuph6J819RRw/ku+rLbelwfMunktuzVVHg==
+
+fflate@0.8.3:
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/fflate/-/fflate-0.8.3.tgz#bc27d8eb30343d4d512abb03480202ce65d825fc"
+  integrity sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==
 
 "file-entry-cache@11.1.5 || >11.1.6 <12":
   version "11.1.5"

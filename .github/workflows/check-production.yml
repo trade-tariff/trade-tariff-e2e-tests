@@ -2,6 +2,14 @@ name: Check Production
 on:
   workflow_dispatch:
 
+# actions: read lets the first job read the previous run conclusion.
+# id-token: write lets the e2e workflow assume the production
+# GithubActions-E2E-Testing-Role and publish CloudWatch metrics.
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+
 jobs:
   get_previous_status:
     runs-on: ubuntu-latest
@@ -33,6 +41,7 @@ jobs:
     with:
       test-environment: production
       ref: ${{ github.sha }}
+      publish-metrics: true
     secrets:
       waf_bypass_token: ${{ secrets.TF_VAR_WAF_E2E_SECRET_TOKEN }}
 

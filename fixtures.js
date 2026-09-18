@@ -47,14 +47,4 @@ export const test = createAuthenticatedTest({
   url: "/find_commodity",
 });
 
-export const adminTest = createAuthenticatedTest({
-  enabled:
-    !isProduction &&
-    process.env.SKIP_ADMIN !== "true" &&
-    Boolean(process.env.ADMIN_URL) &&
-    Boolean(process.env.BASIC_PASSWORD),
-  baseURL: process.env.ADMIN_URL,
-  url: process.env.ADMIN_URL,
-});
-
 export { expect };

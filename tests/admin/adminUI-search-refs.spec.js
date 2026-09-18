@@ -1,14 +1,15 @@
-import { adminTest as test, expect } from "../fixtures.js";
-import LoginPage from "../pages/loginPage.js";
+import { test, expect } from "@playwright/test";
+import LoginPage from "../../pages/loginPage.js";
 
 test.describe("Search References", () => {
   test.beforeEach(
-    async ({ page }) =>
-      await new LoginPage(process.env.ADMIN_URL, page, true).login(),
-  );
+    async ({ page }) => {
+      await new LoginPage(process.env.ADMIN_URL, page, true).login();
+      await page.getByRole("link", { name: "Classification" }).click();
+  });
 
   test("should display UK search references", async ({ page }) => {
-    await page.getByRole("link", { name: "Search references" }).click();
+    await page.getByRole("link", { name: "Search References" }).click();
     await page.getByRole("link", { name: "1 to 5" }).click();
     await page.getByRole("link", { name: "0101 to 0106" }).click();
     await page.getByRole("link", { name: "Commodities in 0101" }).click();
@@ -22,7 +23,7 @@ test.describe("Search References", () => {
 
   test("should display XI Search references", async ({ page }) => {
     await page.getByRole("link", { name: "Switch to XI service" }).click();
-    await page.getByRole("link", { name: "Search references" }).click();
+    await page.getByRole("link", { name: "Search References" }).click();
     await page.getByRole("link", { name: "1 to 5" }).click();
     await page.getByRole("link", { name: "0101 to 0106" }).click();
     await page.getByRole("link", { name: "Commodities in 0101" }).click();

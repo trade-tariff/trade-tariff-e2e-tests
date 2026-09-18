@@ -9,3 +9,5 @@ node_modules/
 /.pre-commit-config-nix.yaml
 
 .env
+
+playwright/.auth/

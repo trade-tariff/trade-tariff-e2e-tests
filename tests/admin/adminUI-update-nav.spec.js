@@ -1,5 +1,5 @@
-import { adminTest as test, expect } from "../fixtures.js";
-import LoginPage from "../pages/loginPage.js";
+import { test, expect } from "@playwright/test";
+import LoginPage from "../../pages/loginPage.js";
 
 test.describe("Admin updates", () => {
   test.beforeEach(

@@ -12,18 +12,12 @@ export default class LoginPage {
     this.url = url;
     this.password = process.env.BASIC_PASSWORD;
     this.skipProduction = skipProduction;
-    this.skipAdmin = process.env.SKIP_ADMIN === "true";
     this.skipFrontend = process.env.SKIP_FRONTEND === "true";
   }
 
   async login() {
     if (this.isProduction && this.skipProduction) {
       test.skip("Skipping in production");
-      return;
-    }
-
-    if (this.isAdmin && this.skipAdmin) {
-      test.skip("Skipping admin test");
       return;
     }
 
@@ -38,7 +32,12 @@ export default class LoginPage {
   }
 
   async completeBasicAuth() {
+    const startNow = this.page.getByRole("button", { name: "Start now" });
     const passwordField = this.page.locator("#basic-session-password-field");
+
+    if (await startNow.isVisible()) {
+      await startNow.click();
+    }
 
     if (!(await passwordField.isVisible())) {
       return;

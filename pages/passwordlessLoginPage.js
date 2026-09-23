@@ -43,8 +43,14 @@ export default class PasswordlessLoginPage {
       }
 
       await this.emailInput().fill(this.emailAddress);
-
       await this.continueButton().click();
+
+      if (await this.notificationBanner().isVisible()) {
+        const message = (await this.errorMessage()).trim();
+        throw new Error(
+          `Passwordless login failed ${message ? `with alert message: "${message.trim()}"` : ""}`,
+        );
+      }
 
       await this.waitForEmail();
       await this.enterCodeFromEmail();
@@ -111,5 +117,15 @@ export default class PasswordlessLoginPage {
 
   otpFirstDigitInput() {
     return this.page.locator('input[aria-label="Digit 1 of 6"]');
+  }
+
+  notificationBanner() {
+    return this.page.getByRole("region", { name: "Alert" });
+  }
+
+  errorMessage() {
+    return this.notificationBanner()
+      .locator(".govuk-notification-banner__content")
+      .textContent();
   }
 }

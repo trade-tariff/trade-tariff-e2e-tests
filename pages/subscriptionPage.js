@@ -36,7 +36,7 @@ export default class SubscribePage {
     await this.click(this.continueButton());
     await expect(this.page.url()).toMatch(/confirmation/);
 
-    await this.click(this.viewWatchListsButton());
+    await this.click(this.viewWatchListsLink());
     await this.click(this.stopPressWatchlistLink());
     await this.click(this.unsubscribeLink());
     await this.click(this.unsubscribeSubmitButton());
@@ -94,8 +94,8 @@ export default class SubscribePage {
     });
   }
 
-  viewWatchListsButton() {
-    return this.page.getByRole("button", {
+  viewWatchListsLink() {
+    return this.page.getByRole("link", {
       name: "View your tariff watch lists",
     });
   }

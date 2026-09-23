@@ -45,6 +45,37 @@ test("fails when the email does not contain an OTP code", async () => {
   await assert.rejects(() => loginPage.enterCodeFromEmail(), /OTP not found/);
 });
 
+test("fails when passwordless login throws up an error", async () => {
+  const events = [];
+
+  const errorContent = {
+    async textContent() {
+      events.push(["textContent"]);
+      return "Something went wrong. Please try again.";
+    },
+  };
+
+  const notificationBanner = {
+    locator(selector) {
+      assert.equal(selector, ".govuk-notification-banner__content");
+      return errorContent;
+    },
+  };
+
+  const loginPage = loginPageFor({
+    getByRole(role, options) {
+      assert.equal(role, "region");
+      assert.deepEqual(options, { name: "Alert" });
+      return notificationBanner;
+    },
+  });
+
+  const message = (await loginPage.errorMessage()).trim();
+
+  assert.equal(message, "Something went wrong. Please try again.");
+  assert.deepEqual(events, [["textContent"]]);
+});
+
 test("enters the OTP code into the first digit field", async () => {
   const events = [];
 

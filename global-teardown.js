@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import adminLogout from "./utils/adminLogout.js";
-
+import { runAdmin } from "./utils/projectArgs.js";
 import { wafBypassHeaders } from "./utils/wafBypassHeaders.js";
 
 const authStatePath = path.resolve(
@@ -12,9 +12,7 @@ const authStatePath = path.resolve(
 );
 
 export default async function globalTeardown() {
-  if (process.env.PLAYWRIGHT_PROJECT !== "admin") {
-    return;
-  }
+  if (!runAdmin()) return;
 
   await adminLogout(process.env.ADMIN_URL, {
     headers: wafBypassHeaders(),

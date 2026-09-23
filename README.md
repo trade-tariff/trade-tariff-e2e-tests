@@ -49,12 +49,16 @@ You can run the tests by running `make test` in the repository root. There are
 variables that control which tests are run, which environment to use, and how
 many Playwright workers to use.
 
-`project` sets the test directory, and must be set. It can be set to:
+`projects` sets which test directories are run. If not provided, all tests run.
+It can be set to a combination of the following, as a comma separated string:
 
 - `admin`
 - `api`
 - `frontend`
 - `myott`
+
+If you only want to run one test project, you can use the singular form,
+`project` instead.
 
 `environment` sets the AWS environment target. It can be set to:
 
@@ -68,20 +72,14 @@ and will default to `development`.
 2 depending on the `project` you have chosen. It can be overridden by providing
 a value.
 
-For example, to run the admin tests against the staging environment, run:
+For example, to run the admin and api tests against the staging environment,
+run:
 
 ```sh
-make test project=admin environment=staging
+make test projects=admin,api environment=staging
 ```
 
 ## Environment variables
-
-There are two environment variables that are used in running the test suite.
-
-- `PLAYWRIGHT_PROJECT` sets the tests to run. This uses the configuration in
-  `playwright.config.js`; in the `projects` array. It has no default, and must
-  be set to run tests. If you are using the Makefile, this is set using the
-  `project` variable.
 
 - `PLAYWRIGHT_ENV` is used to set up some utilities dependant on the targeted
   environment. It defaults to `development`. If you are using the Makefile,
@@ -93,12 +91,15 @@ It is possible to run Playwright in debug mode. This opens Chrome for Testing
 and a Playwright debugger window that allows you to step through tests
 line-by-line.
 
-You will need to set the environment variables `PLAYWRIGHT_PROJECT` and
-`PLAYWRIGHT_ENV` as described above.
+To use debug mode, you can use the Makefile job `debug`. For example, to run
+the admin tests, in the staging environment, in debug mode:
 
-For example, to run the frontend tests in debug mode against the development
-environment, run:
+```sh
+make debug project=admin environment=staging
+```
 
-```bash
-PLAYWRIGHT_PROJECT="frontend" yarn run playwright test --headed --debug
+You can also run specific files, for example:
+
+```sh
+make debug project=admin environment=staging -- tests/admin/adminUI-news-items.spec.js
 ```

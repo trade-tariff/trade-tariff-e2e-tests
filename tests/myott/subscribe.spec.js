@@ -3,7 +3,7 @@ import SubscriptionPage from "../../pages/subscriptionPage.js";
 import LoginPage from "../../pages/loginPage.js";
 import { isProductionEnvironment } from "../../utils/environment.js";
 
-test.describe("MyOTT Subscription Flow E2E Test", () => {
+test.describe("Stop Press watchlist", () => {
   test("should complete passwordless subscription and unsubscription", async ({
     page,
   }) => {

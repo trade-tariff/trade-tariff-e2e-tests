@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { wafBypassHeaders } from "./utils/wafBypassHeaders.js";
 import { waitUntilReady } from "./utils/waitUntilReady.js";
 import adminLogin from "./utils/adminLogin.js";
+import { runAdmin } from "./utils/projectArgs.js";
 
 const playwrightEnv = process.env.PLAYWRIGHT_ENV ?? "development";
 const envFile = path.resolve(import.meta.dirname, `.env.${playwrightEnv}`);
@@ -86,7 +87,7 @@ export default async function globalSetup() {
     onAttempt: logAttempt,
   });
 
-  if (process.env.PLAYWRIGHT_PROJECT === "admin") {
+  if (runAdmin()) {
     await adminLogin(process.env.ADMIN_URL, {
       headers: wafBypassHeaders(),
     });

@@ -1,5 +1,5 @@
-import { test, expect } from "../fixtures.js";
-import LoginPage from "../pages/loginPage.js";
+import { test, expect } from "../../fixtures.js";
+import LoginPage from "../../pages/loginPage.js";
 
 test.describe("News Section", () => {
   test("Validating News section", async ({ page }) => {

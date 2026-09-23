@@ -45,31 +45,60 @@ yarn run playwright install
 This repository contains a [Makefile](./Makefile) to simplify running the test
 suite.
 
-You can run the tests by running `make test` in the repository root. This
-will use some defaults that are configured in the Makefile - for example,
-the default environment to run tests against is `development`, and the default
-project runs the main suite of tests.
+You can run the tests by running `make test` in the repository root. There are
+variables that control which tests are run, which environment to use, and how
+many Playwright workers to use.
 
-To run the admin tests, use the `project` variable:
+`project` sets the test directory, and must be set. It can be set to:
+
+- `admin`
+- `api`
+- `frontend`
+- `myott`
+
+`environment` sets the AWS environment target. It can be set to:
+
+- `development`
+- `staging`
+- `production`
+
+and will default to `development`.
+
+`workers` sets the number of Playwright workers used. This is set between 1 and
+2 depending on the `project` you have chosen. It can be overridden by providing
+a value.
+
+For example, to run the admin tests against the staging environment, run:
 
 ```sh
-make test project=admin
+make test project=admin environment=staging
 ```
 
-To run against a different environment, supply the `environment` variable:
+## Environment variables
 
-```sh
-make test environment=staging
-```
+There are two environment variables that are used in running the test suite.
 
-You can alter the number of Playwright workers with the `workers` variable:
+- `PLAYWRIGHT_PROJECT` sets the tests to run. This uses the configuration in
+  `playwright.config.js`; in the `projects` array. It has no default, and must
+  be set to run tests. If you are using the Makefile, this is set using the
+  `project` variable.
 
-```sh
-make test workers=2
-```
+- `PLAYWRIGHT_ENV` is used to set up some utilities dependant on the targeted
+  environment. It defaults to `development`. If you are using the Makefile,
+  this is set using the `environment` variable.
 
 ## Running tests in debug mode
 
+It is possible to run Playwright in debug mode. This opens Chrome for Testing
+and a Playwright debugger window that allows you to step through tests
+line-by-line.
+
+You will need to set the environment variables `PLAYWRIGHT_PROJECT` and
+`PLAYWRIGHT_ENV` as described above.
+
+For example, to run the frontend tests in debug mode against the development
+environment, run:
+
 ```bash
-yarn run playwright test --headed --debug
+PLAYWRIGHT_PROJECT="frontend" yarn run playwright test --headed --debug
 ```

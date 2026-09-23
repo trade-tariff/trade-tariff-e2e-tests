@@ -1,12 +1,15 @@
 .PHONY: test
 
 environment ?= development
-project ?= ott
+
+ifeq ($(strip $(project)),)
+$(error project must be set! see README.md for usage)
+endif
 
 ifeq ($(project), admin)
-  workers ?= 1
+workers ?= 1
 else
-  workers ?= 2
+workers ?= 2
 endif
 
 test:

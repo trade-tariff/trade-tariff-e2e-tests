@@ -8,21 +8,14 @@ export default class LoginPage {
 
     this.isProduction = isProductionEnvironment();
     this.isAdmin = !!url.match(/admin/);
-    this.isFrontend = !!url.startsWith("/");
     this.url = url;
     this.password = process.env.BASIC_PASSWORD;
     this.skipProduction = skipProduction;
-    this.skipFrontend = process.env.SKIP_FRONTEND === "true";
   }
 
   async login() {
     if (this.isProduction && this.skipProduction) {
       test.skip("Skipping in production");
-      return;
-    }
-
-    if (this.isFrontend && this.skipFrontend) {
-      test.skip("Skipping frontend test");
       return;
     }
 

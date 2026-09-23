@@ -36,11 +36,6 @@ export default defineConfig({
   timeout: 30 * 1000, // 30 seconds
   projects: [
     {
-      name: "ott",
-      testIgnore: /[\\/]tests[\\/]admin[\\/]/,
-      use: { ...devices["Desktop Chrome"] },
-    },
-    {
       name: "admin",
       testDir: "./tests/admin",
       use: {
@@ -48,6 +43,21 @@ export default defineConfig({
         baseURL: process.env.ADMIN_URL,
         storageState: "playwright/.auth/admin.json",
       },
+    },
+    {
+      name: "api",
+      testDir: "./tests/api",
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "frontend",
+      testDir: "./tests/frontend",
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "myott",
+      testDir: "./tests/myott",
+      use: { ...devices["Desktop Chrome"] },
     },
   ],
 });

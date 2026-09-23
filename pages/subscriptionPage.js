@@ -27,7 +27,6 @@ export default class SubscribePage {
     await expect(this.page.url()).toMatch("subscriptions");
 
     await this.click(this.stopPressWatchlistLink());
-    await this.click(this.continueButton());
     await this.check(this.chapterPreferencesRadio());
     await this.click(this.continueButton());
 

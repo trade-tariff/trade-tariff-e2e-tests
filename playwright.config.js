@@ -29,7 +29,7 @@ export default defineConfig({
   // a no-op everywhere except the scheduled production run.
   reporter: onCI ? [["list"], ["./utils/cloudwatchReporter.js"]] : "html",
   use: {
-    trace: "on",
+    trace: onCI ? "off" : "retain-on-failure",
     baseURL: process.env.BASE_URL,
     extraHTTPHeaders: wafBypassHeaders(),
   },

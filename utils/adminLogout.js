@@ -1,4 +1,4 @@
-import { chromium } from "@playwright/test";
+import { expect, chromium } from "@playwright/test";
 
 export default async function adminLogout(url, { headers = {} } = {}) {
   const browser = await chromium.launch();
@@ -11,21 +11,24 @@ export default async function adminLogout(url, { headers = {} } = {}) {
   try {
     const page = await context.newPage();
 
-    const startNow = page.getByRole("button", { name: "Start now" });
-    const signOut = page.getByRole("link", { name: "Sign out" });
+    const startNowButton = page.getByRole("button", { name: "Start now" });
+    const signOutLink = page.getByRole("link", { name: "Sign out" });
     const emailInput = page.locator('input[name="passwordless_form[email]"]');
 
     await page.goto(url);
-    await startNow.click();
+
+    if (await startNowButton.isVisible()) {
+      await startNowButton.click();
+    }
 
     if (await emailInput.isVisible()) {
       console.log("Not logged in, session may have timed out.");
     }
 
-    if (await signOut.isVisible()) {
-      await signOut.click();
+    if (await signOutLink.isVisible()) {
+      await signOutLink.click();
       await page.waitForLoadState("domcontentloaded");
-      await page.getByText("You have been logged out.");
+      await expect(page.getByText("You have been logged out.")).toBeVisible();
     }
   } finally {
     await context.close();

@@ -49,7 +49,10 @@ export default class PasswordlessLoginPage {
       await this.waitForEmail();
       await this.enterCodeFromEmail();
 
-      await this.continueButton().click();
+      await Promise.all([
+        this.continueButton().click(),
+        this.page.waitForLoadState("load"),
+      ]);
     });
 
     return this.page;

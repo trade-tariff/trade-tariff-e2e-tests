@@ -1,3 +1,5 @@
+import { isProductionEnvironment } from "./environment.js";
+
 function projectArgs() {
   const projects = [];
 
@@ -17,6 +19,8 @@ function projectArgs() {
 
 export function runAdmin() {
   const projects = projectArgs();
+
+  if (isProductionEnvironment()) return false;
 
   // no filter, so run admin too
   if (projects.length === 0) return true;

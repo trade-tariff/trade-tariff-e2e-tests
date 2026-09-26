@@ -1,5 +1,5 @@
-import { test, expect } from "../fixtures.js";
-import LoginPage from "../pages/loginPage.js";
+import { test, expect } from "../../fixtures.js";
+import LoginPage from "../../pages/loginPage.js";
 
 test.describe("Find Commodity", () => {
   test("searching commodity by reference", async ({ page }) => {

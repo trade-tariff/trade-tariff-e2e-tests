@@ -1,5 +1,5 @@
-import { test, expect } from "../fixtures.js";
-import LoginPage from "../pages/loginPage.js";
+import { test, expect } from "../../fixtures.js";
+import LoginPage from "../../pages/loginPage.js";
 
 test.describe("Rules of origin Display", () => {
   test("Verify Rules of Origin are displayed for selected commodity", async ({

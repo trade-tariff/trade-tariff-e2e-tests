@@ -112,7 +112,7 @@ export default class PasswordlessLoginPage {
   }
 
   emailInput() {
-    return this.page.locator('input[name="passwordless_form[email]"]');
+    return this.page.getByRole("textbox", { name: "Email" });
   }
 
   otpFirstDigitInput() {

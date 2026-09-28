@@ -1,8 +1,9 @@
 import {
-  S3Client,
-  PutObjectCommand,
-  HeadObjectCommand,
   DeleteObjectCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
+  PutObjectCommand,
+  S3Client,
 } from "@aws-sdk/client-s3";
 import { setTimeout as sleep } from "timers/promises";
 
@@ -13,12 +14,16 @@ export default class S3Lock {
     region = "eu-west-2",
     maxWaitMs = 60000,
     pollIntervalMs = 5000,
+    // S3 lock should not live longer than this
+    // and is reaped after this timeout
+    staleAfterMs = 120000,
   ) {
     this.bucket = bucket;
     this.lockKey = lockKey;
     this.s3Client = new S3Client({ region });
     this.maxWaitMs = maxWaitMs;
     this.pollIntervalMs = pollIntervalMs;
+    this.staleAfterMs = staleAfterMs;
   }
 
   async acquire() {
@@ -37,9 +42,32 @@ export default class S3Lock {
       return true;
     } catch (error) {
       if (error.name === "PreconditionFailed") {
+        await this.#reapIfStale();
         return false;
       }
       throw error;
+    }
+  }
+
+  async #reapIfStale() {
+    try {
+      const response = await this.s3Client.send(
+        new GetObjectCommand({
+          Bucket: this.bucket,
+          Key: this.lockKey,
+        }),
+      );
+
+      const body = await response.Body.transformToString();
+      const lock = body ? JSON.parse(body) : null;
+      const age = lock ? Date.now() - new Date(lock.lockedAt).getTime() : 0;
+
+      if (lock && age > this.staleAfterMs) {
+        console.log(`Reaping stale lock held by PID ${lock.pid}, age ${age}ms`);
+        await this.release();
+      }
+    } catch {
+      // lock may have already been released, nothing to do
     }
   }
 

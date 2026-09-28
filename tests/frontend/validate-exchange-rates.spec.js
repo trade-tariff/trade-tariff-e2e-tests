@@ -1,8 +1,8 @@
-import { test, expect } from "../fixtures.js";
-import LoginPage from "../pages/loginPage.js";
-import DownloadHelper from "../utils/downloadHelper.js";
-import { assertExchangeRateCsv } from "../utils/exchangeRateCsv.js";
-import { readSampleRates } from "../utils/exchangeRateTable.js";
+import { test, expect } from "../../fixtures.js";
+import LoginPage from "../../pages/loginPage.js";
+import DownloadHelper from "../../utils/downloadHelper.js";
+import { assertExchangeRateCsv } from "../../utils/exchangeRateCsv.js";
+import { readSampleRates } from "../../utils/exchangeRateTable.js";
 
 const SAMPLE_CODES = ["EUR", "USD", "JPY"];
 

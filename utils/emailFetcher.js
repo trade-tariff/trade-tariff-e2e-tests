@@ -14,41 +14,51 @@ export default class EmailFetcher {
     this.targetRecipient = process.env.PASSWORDLESS_SUBSCRIPTIONS_EMAIL;
   }
 
-  async getLatestEmail(limit = 100) {
-    let allContents = [];
-
+  async getLatestEmail({ limit = 100, notBefore } = {}) {
     const listCommand = new ListObjectsV2Command({
       Bucket: this.bucket,
       Prefix: this.prefix,
       MaxKeys: limit,
     });
+
     const response = await this.s3Client.send(listCommand);
-    if (response.Contents) {
-      allContents = response.Contents;
-    }
 
-    if (allContents.length === 0) return [];
+    const contents = (response.Contents ?? [])
+      .filter((object) => object.Key)
+      .sort(
+        (a, b) => new Date(b.LastModified ?? 0) - new Date(a.LastModified ?? 0),
+      );
 
-    allContents.sort(
-      (a, b) => new Date(b.LastModified) - new Date(a.LastModified),
-    );
+    for (const object of contents) {
+      const email = await this._fetchAndParseEmail(object.Key);
 
-    let email = undefined;
-    for (const obj of allContents) {
-      const emailData = await this._fetchAndParseEmail(obj.Key);
-      if (
-        emailData &&
-        emailData.to.toLowerCase().includes(this.targetRecipient.toLowerCase())
-      ) {
-        const code = this.extractCode(emailData);
-        if (code) {
-          emailData.code = code;
-          email = emailData;
-          break;
-        }
+      if (!email) {
+        continue;
+      }
+
+      const isForTargetRecipient = email.to
+        .toLowerCase()
+        .includes(this.targetRecipient.toLowerCase());
+
+      if (!isForTargetRecipient) {
+        continue;
+      }
+
+      if (notBefore && email.send_date < notBefore) {
+        continue;
+      }
+
+      const code = this.extractCode(email);
+
+      if (code) {
+        return {
+          ...email,
+          code,
+        };
       }
     }
-    return email;
+
+    return null;
   }
 
   async deleteEmail(key) {
@@ -89,11 +99,24 @@ export default class EmailFetcher {
     }
   }
 
+  /*
+    # email object
+    {
+      from: string (email address),
+      to: string (email address),
+      send_date: date,
+      subject: string,
+      body: string,
+      s3_key: string
+    }
+  */
+
   extractCode(emailObj) {
     if (!emailObj || !emailObj.body) return null;
 
-    const match = emailObj.body.match(/\d{6}/);
+    const codeRegex = /(?:Enter this code to log in: )(\d{6})/g;
+    const emailCode = [...emailObj.body.matchAll(codeRegex)].map((m) => m[1]);
 
-    return match ? match[0] : null;
+    return emailCode[0] || null;
   }
 }

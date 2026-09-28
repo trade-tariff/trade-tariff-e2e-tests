@@ -12,6 +12,7 @@ dotenv.config({ path: ".env" });
 const onCI = (process.env.CI ?? "false") === "true";
 export default defineConfig({
   globalSetup: "./global-setup.js",
+  globalTeardown: "./global-teardown.js",
   testDir: "./tests",
   fullyParallel: true,
   forbidOnly: onCI,
@@ -28,14 +29,34 @@ export default defineConfig({
   // a no-op everywhere except the scheduled production run.
   reporter: onCI ? [["list"], ["./utils/cloudwatchReporter.js"]] : "html",
   use: {
-    trace: "off",
+    trace: onCI ? "off" : "retain-on-failure",
     baseURL: process.env.BASE_URL,
     extraHTTPHeaders: wafBypassHeaders(),
   },
   timeout: 30 * 1000, // 30 seconds
   projects: [
     {
-      name: "chromium",
+      name: "admin",
+      testDir: "./tests/admin",
+      use: {
+        ...devices["Desktop Chrome"],
+        baseURL: process.env.ADMIN_URL,
+        storageState: "playwright/.auth/admin.json",
+      },
+    },
+    {
+      name: "api",
+      testDir: "./tests/api",
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "frontend",
+      testDir: "./tests/frontend",
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "myott",
+      testDir: "./tests/myott",
       use: { ...devices["Desktop Chrome"] },
     },
   ],

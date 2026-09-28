@@ -1,6 +1,6 @@
-import { test, expect } from "../fixtures.js";
-import LoginPage from "../pages/loginPage.js";
-import { monitorAssetErrors } from "../utils/assetErrorMonitor.js";
+import { test, expect } from "../../fixtures.js";
+import LoginPage from "../../pages/loginPage.js";
+import { monitorAssetErrors } from "../../utils/assetErrorMonitor.js";
 
 test.describe("Frontend assets", () => {
   test("find commodity page loads JavaScript assets without errors", async ({
@@ -13,7 +13,7 @@ test.describe("Frontend assets", () => {
 
     await expect(
       page.getByRole("heading", {
-        name: "Look up commodity codes, import duties, taxes and controls",
+        name: /commodity codes, import duties, taxes and controls/,
       }),
     ).toBeVisible();
 

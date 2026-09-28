@@ -2,6 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 import path from "path";
 import dotenv from "dotenv";
 import { wafBypassHeaders } from "./utils/wafBypassHeaders.js";
+import { runAdmin } from "./utils/projectArgs.js";
 
 const playwrightEnv = process.env.PLAYWRIGHT_ENV ?? "development";
 const envFile = path.resolve(import.meta.dirname, `.env.${playwrightEnv}`);
@@ -35,15 +36,19 @@ export default defineConfig({
   },
   timeout: 30 * 1000, // 30 seconds
   projects: [
-    {
-      name: "admin",
-      testDir: "./tests/admin",
-      use: {
-        ...devices["Desktop Chrome"],
-        baseURL: process.env.ADMIN_URL,
-        storageState: "playwright/.auth/admin.json",
-      },
-    },
+    ...(runAdmin()
+      ? [
+          {
+            name: "admin",
+            testDir: "./tests/admin",
+            use: {
+              ...devices["Desktop Chrome"],
+              baseURL: process.env.ADMIN_URL,
+              storageState: "playwright/.auth/admin.json",
+            },
+          },
+        ]
+      : []),
     {
       name: "api",
       testDir: "./tests/api",

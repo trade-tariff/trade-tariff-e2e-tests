@@ -22,6 +22,8 @@ export function runAdmin() {
 
   if (isProductionEnvironment()) return false;
 
+  if (process.env.SKIP_ADMIN === "true") return false;
+
   // no filter, so run admin too
   if (projects.length === 0) return true;
 

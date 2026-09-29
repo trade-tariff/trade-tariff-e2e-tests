@@ -35,12 +35,25 @@ Implementation details for the frontend and backend can be reviewed, here:
 
 ## Installing prerequisites
 
+Use Node.js and Yarn with the versions supported by [package.json](package.json)
+and the [CI workflows](.github/workflows/).
+
 ```bash
-yarn install
+yarn install --frozen-lockfile
 yarn run playwright install
 ```
 
+## Local checks
+
+Run `yarn lint` and `yarn test-unit` for lint and helper unit tests. These are
+separate from the browser journeys.
+
 ## Running tests
+
+Browser tests target deployed services and some journeys change data or use
+AWS-backed sign-in fixtures. Confirm the target, test identity and authorisation
+before running them. Keep credentials, traces and test reports private.
+Do not run against production without explicit approval.
 
 This repository contains a [Makefile](./Makefile) to simplify running the test
 suite.
@@ -49,7 +62,9 @@ You can run the tests by running `make test` in the repository root. There are
 variables that control which tests are run, which environment to use, and how
 many Playwright workers to use.
 
-`projects` sets which test directories are run. If not provided, all tests run.
+`projects` selects the configured Playwright projects. If omitted, the suite
+runs the projects enabled for the selected environment. The production
+configuration excludes the Admin project.
 It can be set to a combination of the following, as a comma separated string:
 
 - `admin`
@@ -101,5 +116,15 @@ make debug project=admin environment=staging
 You can also run specific files, for example:
 
 ```sh
-make debug project=admin environment=staging -- tests/admin/adminUI-news-items.spec.js
+make debug project=admin environment=staging args=tests/admin/adminUI-news-items.spec.js
 ```
+
+## Contribute
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for the fork workflow, review process and
+private security reporting.
+
+## Licence
+
+The code and associated documentation use the [MIT licence](LICENCE.md), with
+Crown copyright (HM Revenue & Customs). Dependencies retain their own licences.

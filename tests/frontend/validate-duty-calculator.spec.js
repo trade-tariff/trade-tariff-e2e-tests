@@ -6,9 +6,7 @@ test.describe("Duty Calculator Integration", () => {
     await new LoginPage("/commodities/0702001007", page).login();
 
     // Navigate through the import date step
-    await page
-      .getByRole("link", { name: "work out the duties and taxes" })
-      .click();
+    await page.getByRole("link", { name: "Start a duty calculation" }).click();
 
     // Navigate through the import destination step
     await page.getByRole("button", { name: "Continue" }).click();

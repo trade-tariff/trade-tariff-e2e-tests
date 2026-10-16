@@ -4,41 +4,29 @@ import LoginPage from "../../pages/loginPage.js";
 test.describe("Duty Calculator Integration", () => {
   test("Validating the duty calculator", async ({ page }) => {
     await new LoginPage("/commodities/0702001007", page).login();
-
-    // Navigate through the import date step
     await page.getByRole("link", { name: "Start a duty calculation" }).click();
 
-    // Navigate through the import destination step
-    await page.getByRole("button", { name: "Continue" }).click();
-    await page
-      .getByRole("radio", { name: "England, Scotland or Wales (" })
-      .check();
+    const importDetails = page.getByRole("heading", {
+      name: "Tell us about this import",
+    });
+    const legacyImportDate = page.getByRole("heading", {
+      name: "When will the goods be imported?",
+    });
+    await expect(importDetails.or(legacyImportDate)).toBeVisible();
+
+    if (await importDetails.isVisible()) {
+      await completeStandardImportDetails(page);
+    } else {
+      await completeLegacyImportSteps(page);
+    }
+
+    const customsValue = page.getByRole("textbox", {
+      name: /value of goods being imported|value in GBP of/i,
+    });
+    await customsValue.click();
+    await customsValue.fill("1000");
     await page.getByRole("button", { name: "Continue" }).click();
 
-    // Navigate through the import origin step
-    await page
-      .locator(
-        "//input[@id='duty-calculator-steps-country-of-origin-country-of-origin-field']",
-      )
-      .click();
-    await page
-      .getByRole("combobox", { name: "Where are the goods coming" })
-      .fill("Canada");
-    await page
-      .getByRole("combobox", { name: "Where are the goods coming" })
-      .press("Enter");
-    await page.getByRole("button", { name: "Continue" }).click();
-
-    // Navigate through the customs value step
-    await page
-      .getByRole("textbox", { name: "What is the value in GBP of" })
-      .click();
-    await page
-      .getByRole("textbox", { name: "What is the value in GBP of" })
-      .fill("1000");
-    await page.getByRole("button", { name: "Continue" }).click();
-
-    // Navigate through the document codes step
     await expect(
       page.getByRole("heading", {
         name: "Do you have any of the following documents?",
@@ -47,12 +35,68 @@ test.describe("Duty Calculator Integration", () => {
     await page.getByRole("radio", { name: "None of the above" }).check();
     await page.getByRole("button", { name: "Continue" }).click();
 
-    // Navigate through the Check your answers step
-    await page.getByRole("link", { name: "Calculate import duties" }).click();
+    const legacyCalculate = page.getByRole("link", {
+      name: "Calculate import duties",
+    });
+    const standardContinue = page
+      .getByRole("main")
+      .getByRole("link", { name: "Continue" });
+    await expect(legacyCalculate.or(standardContinue)).toBeVisible();
 
-    // Verify we have results
+    if (await legacyCalculate.isVisible()) {
+      await legacyCalculate.click();
+      await expect(
+        page.getByRole("heading", { name: "Option 1: Third-country duty" }),
+      ).toBeVisible();
+      return;
+    }
+
+    await standardContinue.click();
     await expect(
-      page.getByRole("heading", { name: "Option 1: Third-country duty" }),
+      page.getByRole("heading", { name: "Import cost estimate" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", {
+        name: "Estimated duty and VAT using standard duty",
+      }),
     ).toBeVisible();
   });
 });
+
+async function completeStandardImportDetails(page) {
+  await page
+    .getByRole("radio", { name: "England, Scotland or Wales (GB)" })
+    .check();
+
+  await page
+    .locator(
+      "//input[@id='duty-calculator-steps-import-details-country-of-origin-field']",
+    )
+    .click();
+  const origin = page.getByRole("combobox", {
+    name: "What is the country of origin?",
+  });
+  await origin.fill("Canada");
+  await origin.press("Enter");
+  await page.getByRole("button", { name: "Continue" }).click();
+}
+
+async function completeLegacyImportSteps(page) {
+  await page.getByRole("button", { name: "Continue" }).click();
+  await page
+    .getByRole("radio", { name: "England, Scotland or Wales (" })
+    .check();
+  await page.getByRole("button", { name: "Continue" }).click();
+
+  await page
+    .locator(
+      "//input[@id='duty-calculator-steps-country-of-origin-country-of-origin-field']",
+    )
+    .click();
+  const origin = page.getByRole("combobox", {
+    name: "Where are the goods coming",
+  });
+  await origin.fill("Canada");
+  await origin.press("Enter");
+  await page.getByRole("button", { name: "Continue" }).click();
+}

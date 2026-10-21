@@ -2,12 +2,15 @@ import { expect } from "@playwright/test";
 import { wafBypassHeaders } from "./wafBypassHeaders.js";
 
 export default class ApiClient {
-  static #url = process.env.FPO_SEARCH_URL;
-  static #defaultRetries = 120;
+  static #defaultTimeoutMs = 45_000;
+  static #requestTimeoutMs = 5_000;
   static #retrySleepMs = 1000;
   #apiKey;
+  #url;
 
   constructor(apiKey) {
+    this.#url = process.env.FPO_SEARCH_URL;
+    if (!this.#url) throw new Error("FPO_SEARCH_URL is not set.");
     this.#apiKey = apiKey;
     this.status = null;
     this.json = null;
@@ -21,8 +24,8 @@ export default class ApiClient {
 
     const res = await this.handleResponse(handleOpts);
 
-    this.status = res.status ?? null;
-    this.json = await res.json().catch(() => null); // guard against throwing
+    this.status = res?.status ?? null;
+    this.json = res ? await res.json().catch(() => null) : null;
   }
 
   assertSuccessful() {
@@ -35,30 +38,31 @@ export default class ApiClient {
 
   async handleResponse(opts) {
     const startTime = Date.now();
-    const retries = opts.retries ?? ApiClient.#defaultRetries;
+    const timeoutMs = opts.timeoutMs ?? ApiClient.#defaultTimeoutMs;
     const sleepFor = opts.sleepFor ?? ApiClient.#retrySleepMs;
 
     let res = null;
     let success = false;
 
-    for (let attempt = 0; attempt < retries; attempt++) {
+    for (let attempt = 0; Date.now() - startTime < timeoutMs; attempt++) {
       if (attempt !== 0) {
-        console.log(`Retrying, attempt ${attempt} of ${retries}...`);
+        console.log(`Retrying, attempt ${attempt}...`);
       }
 
-      res = await fetch(ApiClient.#url, opts.requestOptions);
+      try {
+        res = await fetch(this.#url, {
+          ...opts.requestOptions,
+          signal: AbortSignal.timeout(ApiClient.#requestTimeoutMs),
+        });
 
-      // if we expect failure, success is a non-200 status
-      if (opts.expectFailure) {
-        if (res.status !== 200) {
+        // if we expect failure, success is a non-200 status
+        const ok = res.status === 200;
+        if (opts.expectFailure ? !ok : ok) {
           success = true;
           break;
         }
-      } else {
-        if (res.status === 200) {
-          success = true;
-          break;
-        }
+      } catch (error) {
+        console.warn(`Request failed: ${error.message}`);
       }
 
       await new Promise((resolve) => setTimeout(resolve, sleepFor));
@@ -66,16 +70,13 @@ export default class ApiClient {
 
     const endTime = Date.now();
     const deltaSeconds = (endTime - startTime) / 1000;
+    const state = opts.expectFailure ? "inactive" : "active";
 
-    if (success) {
-      console.log(
-        `Key ${opts.expectFailure ? "inactive" : "active"} in ${deltaSeconds} seconds`,
-      );
-    } else {
-      console.log(
-        `Key failed to be ${opts.expectFailure ? "inactive" : "active"} in ${deltaSeconds} seconds`,
-      );
-    }
+    console.log(
+      success
+        ? `Key ${state} in ${deltaSeconds}s.`
+        : `Key failed to be ${state} after ${deltaSeconds}s.`,
+    );
 
     return res;
   }

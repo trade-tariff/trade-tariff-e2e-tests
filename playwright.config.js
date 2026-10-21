@@ -70,7 +70,6 @@ export default defineConfig({
     }),
     authedProject("myott", {
       skipVar: "SKIP_MYOTT",
-      baseURL: process.env.MYOTT_URL,
     }),
   ].filter(Boolean),
 });

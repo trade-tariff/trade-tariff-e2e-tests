@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { wafBypassHeaders } from "./utils/wafBypassHeaders.js";
 import { waitUntilReady } from "./utils/waitUntilReady.js";
 import passwordlessLogin from "./utils/passwordlessLogin.js";
+import { needsLogin } from "./utils/projectArgs.js";
 
 const playwrightEnv = process.env.PLAYWRIGHT_ENV ?? "development";
 const envFile = path.resolve(import.meta.dirname, `.env.${playwrightEnv}`);
@@ -86,9 +87,19 @@ export default async function globalSetup() {
     onAttempt: logAttempt,
   });
 
+  // logging into admin or the dev-hub sets cookies that are valid against the
+  // whole of the environment as the Domain value is the environment subdomain,
+  // i.e. Domain:".staging.trade-tariff.service.gov.uk" for staging. This means
+  // we can log in once for the entire test run and the session will stay valid
+  // until we log out; so DEV_HUB_URL or ADMIN_URL are both fine to use here
   if (process.env.SKIP_PASSWORDLESS !== "true") {
-    await passwordlessLogin(process.env.DEV_HUB_URL, {
-      headers: wafBypassHeaders(),
-    });
+    if (needsLogin()) {
+      await passwordlessLogin(
+        process.env.DEV_HUB_URL || process.env.ADMIN_URL,
+        {
+          headers: wafBypassHeaders(),
+        },
+      );
+    }
   }
 }

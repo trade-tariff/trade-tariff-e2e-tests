@@ -1,5 +1,11 @@
 import { isProductionEnvironment } from "./environment.js";
 
+const AUTHED_PROJECTS = [
+  ["admin", "SKIP_ADMIN"],
+  ["dev-hub", "SKIP_DEV_HUB"],
+  ["myott", "SKIP_MYOTT"],
+];
+
 function projectArgs() {
   const projects = [];
 
@@ -32,4 +38,10 @@ export function runProject(name, { skipProd = true, skipVars = [] } = {}) {
   if (projects.length === 0) return true;
 
   return projects.includes(name);
+}
+
+export function needsLogin() {
+  return AUTHED_PROJECTS.some(([name, skipVar]) =>
+    runProject(name, { skipVars: [skipVar, "SKIP_PASSWORDLESS"] }),
+  );
 }

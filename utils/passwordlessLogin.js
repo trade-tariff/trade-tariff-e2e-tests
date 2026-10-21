@@ -24,7 +24,7 @@ function hasUnexpiredCookies(state) {
   const cookies = state?.cookies ?? [];
   if (cookies.length === 0) return false;
 
-  const now = Date.now();
+  const now = Date.now() / 1000;
   // expires === -1 is a session cookie
   return cookies.some((c) => c.expires === -1 || c.expires > now);
 }
@@ -83,6 +83,7 @@ export default async function passwordlessLogin(url, { headers = {} } = {}) {
       await fs.writeFile(authFile, JSON.stringify(state, null, 2));
     } catch (error) {
       console.error("Could not log in:", error);
+      throw error;
     } finally {
       await context.close();
     }

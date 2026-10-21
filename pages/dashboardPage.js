@@ -32,9 +32,12 @@ export default class DashboardPage {
   async revokeKey(description) {
     await this.ensureOnApiKeysPage();
 
-    await this.keyRow(description)
-      .getByRole("link", { name: "Revoke" })
-      .click();
+    const revokeButton = await this.keyRow(description).getByRole("link", {
+      name: "Revoke",
+    });
+
+    if (!(await revokeButton.isVisible())) return; //already revoked, or never created;
+    await revokeButton.click();
 
     this.assertRevokeKeyPage();
     await this.assertRevokeConfirmationPage(description);
@@ -49,9 +52,12 @@ export default class DashboardPage {
   async deleteKey(description) {
     await this.ensureOnApiKeysPage();
 
-    await this.keyRow(description)
-      .getByRole("link", { name: "Delete" })
-      .click();
+    const deleteButton = await this.keyRow(description).getByRole("link", {
+      name: "Delete",
+    });
+
+    if (!(await deleteButton.isVisible())) return;
+    await deleteButton.click();
 
     this.assertDeleteKeyPage();
     await this.assertDeleteConfirmationPage(description);
@@ -180,10 +186,12 @@ export default class DashboardPage {
   }
 
   revokedDate() {
-    const today = new Date();
-    const day = today.getDate();
-    const month = today.toLocaleString("default", { month: "long" });
-    const year = today.getFullYear();
-    return `Revoked on ${day} ${month} ${year}`;
+    const formattedDate = new Date().toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "Europe/London",
+    });
+    return `Revoked on ${formattedDate}`;
   }
 }

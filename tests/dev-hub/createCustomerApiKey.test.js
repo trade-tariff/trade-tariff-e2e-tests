@@ -8,10 +8,19 @@ const classificationOpts = {
   description: "jewelry case",
   expectFailure: false,
 };
+let dashboardPage;
+
+test.afterEach(async ({ page }, testInfo) => {
+  if (testInfo.status === testInfo.expectedStatus) return;
+
+  dashboardPage ?? new DashboardPage(page);
+  await dashboardPage.revokeKey(keyDescription).catch(() => {});
+  await dashboardPage.deleteKey(keyDescription).catch(() => {});
+});
 
 test("creating, using, and revoking a customer API key", async ({ page }) => {
   await new LoginPage(process.env.DEV_HUB_URL, page, true).login();
-  const dashboardPage = new DashboardPage(page);
+  dashboardPage = new DashboardPage(page);
 
   await dashboardPage.createKey(keyDescription);
   const storedKey = dashboardPage.getKey(keyDescription);

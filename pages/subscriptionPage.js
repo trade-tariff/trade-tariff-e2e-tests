@@ -18,8 +18,6 @@ export default class SubscribePage {
   }
 
   async start() {
-    await this.cleaner.deleteUserByEmail(this.email_address);
-
     await new PasswordlessLoginPage(this.page, {
       startingURL: "/subscriptions/start",
     }).login();
@@ -44,7 +42,6 @@ export default class SubscribePage {
       "/subscriptions/unsubscribe/confirmation",
     );
 
-    await this.fetcher.deleteEmail(this.email.s3_key);
     await this.cleaner.deleteUserByEmail(this.email_address);
   }
 

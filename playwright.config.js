@@ -2,9 +2,8 @@ import { defineConfig, devices } from "@playwright/test";
 import path from "path";
 import dotenv from "dotenv";
 import { wafBypassHeaders } from "./utils/wafBypassHeaders.js";
-import { runProject } from "./utils/projectArgs.js";
+import { runProject, authFileFor } from "./utils/projectArgs.js";
 
-const authFile = "playwright/.auth/auth.json";
 const playwrightEnv = process.env.PLAYWRIGHT_ENV ?? "development";
 const envFile = path.resolve(import.meta.dirname, `.env.${playwrightEnv}`);
 const desktopChrome = devices["Desktop Chrome"];
@@ -18,7 +17,7 @@ const authedProject = (name, { skipVar, baseURL, ...overrides }) =>
         name,
         testDir: `./tests/${name}`,
         ...overrides,
-        use: { ...desktopChrome, baseURL, storageState: authFile },
+        use: { ...desktopChrome, baseURL, storageState: authFileFor(name) },
       }
     : null;
 
@@ -70,6 +69,7 @@ export default defineConfig({
     }),
     authedProject("myott", {
       skipVar: "SKIP_MYOTT",
+      baseURL: "MYOTT_URL",
     }),
   ].filter(Boolean),
 });

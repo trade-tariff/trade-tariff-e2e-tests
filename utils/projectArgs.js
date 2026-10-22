@@ -1,10 +1,23 @@
 import { isProductionEnvironment } from "./environment.js";
 
-const AUTHED_PROJECTS = [
-  ["admin", "SKIP_ADMIN"],
-  ["dev-hub", "SKIP_DEV_HUB"],
-  ["myott", "SKIP_MYOTT"],
-];
+const AUTHED_PROJECTS = {
+  admin: {
+    skipVar: "SKIP_ADMIN",
+    urlVar: "ADMIN_URL",
+  },
+  "dev-hub": {
+    skipVar: "SKIP_DEV_HUB",
+    urlVar: "DEV_HUB_URL",
+  },
+  myott: {
+    skipVar: "SKIP_MYOTT",
+    urlVar: "MYOTT_URL",
+  },
+};
+
+export function authFileFor(name) {
+  return `playwright/.auth/${name}.json`;
+}
 
 function projectArgs() {
   const projects = [];
@@ -40,8 +53,10 @@ export function runProject(name, { skipProd = true, skipVars = [] } = {}) {
   return projects.includes(name);
 }
 
-export function needsLogin() {
-  return AUTHED_PROJECTS.some(([name, skipVar]) =>
-    runProject(name, { skipVars: [skipVar, "SKIP_PASSWORDLESS"] }),
-  );
+export function authedProjectsToRun() {
+  return Object.entries(AUTHED_PROJECTS)
+    .filter(([name, { skipVar }]) =>
+      runProject(name, { skipVars: [skipVar, "SKIP_PASSWORDLESS"] }),
+    )
+    .map(([name, { urlVar }]) => ({ name, url: process.env[urlVar] }));
 }

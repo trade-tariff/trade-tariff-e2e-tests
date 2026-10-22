@@ -3,16 +3,11 @@ import path from "node:path";
 import { chromium } from "@playwright/test";
 
 import PasswordlessLoginPage from "../pages/passwordlessLoginPage.js";
+import { authFileFor } from "./projectArgs.js";
 
-const authStatePath = path.resolve(
-  import.meta.dirname,
-  "../",
-  "playwright",
-  ".auth",
-);
-const authFile = path.join(authStatePath, "auth.json");
+const root = path.resolve(import.meta.dirname, "../");
 
-async function readAuthState() {
+async function readAuthState(authFile) {
   try {
     return JSON.parse(await fs.readFile(authFile, "utf-8"));
   } catch {
@@ -52,21 +47,28 @@ async function isSessionValid(browser, state, url, headers) {
   }
 }
 
-export default async function passwordlessLogin(url, { headers = {} } = {}) {
+export default async function passwordlessLogin(
+  name,
+  url,
+  { headers = {} } = {},
+) {
+  const authFile = path.join(root, authFileFor(name));
   const browser = await chromium.launch();
 
   try {
-    const existing = await readAuthState();
+    const existing = await readAuthState(authFile);
 
     if (
       hasUnexpiredCookies(existing) &&
       (await isSessionValid(browser, existing, url, headers))
     ) {
-      console.log("Existing auth state is valid, skipping passwordless login.");
+      console.log(
+        `[${name}] existing auth state is valid, skipping passwordless login.`,
+      );
       return;
     }
 
-    console.log("No valid auth state found, logging in.");
+    console.log(`[${name}] no valid auth state found, logging in.`);
 
     const context = await browser.newContext({
       baseURL: url,
@@ -75,12 +77,10 @@ export default async function passwordlessLogin(url, { headers = {} } = {}) {
 
     try {
       const page = await context.newPage();
-
       await new PasswordlessLoginPage(page, { startingURL: url }).login();
 
-      const state = await context.storageState();
-      await fs.mkdir(authStatePath, { recursive: true });
-      await fs.writeFile(authFile, JSON.stringify(state, null, 2));
+      await fs.mkdir(path.dirname(authFile), { recursive: true });
+      await context.storageState({ path: authFile });
     } catch (error) {
       console.error("Could not log in:", error);
       throw error;

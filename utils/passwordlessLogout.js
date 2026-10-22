@@ -1,57 +1,63 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { expect, chromium } from "@playwright/test";
+import { authFileFor } from "./projectArgs.js";
 
-const authStatePath = path.resolve(
-  import.meta.dirname,
-  "../",
-  "playwright",
-  ".auth",
-);
+const root = path.resolve(import.meta.dirname, "../");
 
-export default async function passwordlessLogout(url, { headers = {} } = {}) {
+export default async function passwordlessLogout(
+  name,
+  url,
+  { headers = {} } = {},
+) {
+  const authFile = path.join(root, authFileFor(name));
+
+  if (process.env.KEEP_AUTH) {
+    console.warn(
+      `KEEP_AUTH is set! Live auth state still exists at ${authFile}`,
+    );
+    return;
+  }
+
   const browser = await chromium.launch();
 
-  const context = await browser.newContext({
-    baseURL: url,
-    extraHTTPHeaders: headers,
-  });
-
   try {
-    const page = await context.newPage();
+    const context = await browser.newContext({
+      baseURL: url,
+      extraHTTPHeaders: headers,
+      storageState: await fs
+        .access(authFile)
+        .then(() => authFile)
+        .catch(() => undefined),
+    });
 
-    const startNowButton = page.getByRole("button", { name: "Start now" });
-    const signOutLink = page.getByRole("link", { name: "Sign out" });
-    const emailInput = page.getByRole("textbox", { name: "Email" });
+    try {
+      const page = await context.newPage();
+      await page.goto(url);
 
-    await page.goto(url);
+      const startNowButton = page.getByRole("button", { name: "Start now" });
+      if (await startNowButton.isVisible()) await startNowButton.click();
 
-    if (await startNowButton.isVisible()) {
-      await startNowButton.click();
-    }
+      const signOutLink = page.getByRole("link", { name: "Sign out" });
 
-    if (await emailInput.isVisible()) {
-      console.log("Not logged in, session may have timed out.");
-    }
+      const loggedOutLocators = page
+        .getByText("You have been logged out.")
+        .or(page.getByText("You have signed out"));
 
-    if (process.env.KEEP_AUTH) {
-      console.warn(
-        `KEEP_AUTH is set! Live auth state still exists at ${path.join(authStatePath, "auth.json")}`,
-      );
-      return;
-    } else {
       if (await signOutLink.isVisible()) {
         await signOutLink.click();
         await page.waitForLoadState("domcontentloaded");
-        await expect(page.getByText("You have been logged out.")).toBeVisible();
+        await expect(loggedOutLocators).toBeVisible();
+      } else {
+        console.log(`[${name}] not logged in, session may have timed out.`);
       }
-
-      await fs.rm(path.join(authStatePath, "auth.json"));
+    } finally {
+      await context.close();
     }
   } catch (error) {
-    console.error("Could not log out:", error);
+    console.error(`[${name}] could not log out:`, error);
   } finally {
-    await context.close();
     await browser.close();
+    await fs.rm(authFile, { force: true });
   }
 }

@@ -20,6 +20,7 @@ export default class PasswordlessLoginPage {
       process.env.PASSWORDLESS_SUBSCRIPTIONS_EMAIL ??
       "";
     this.startingURL = options.startingURL ?? "";
+    this.basicAuthPassword = process.env.BASIC_PASSWORD;
     this.email = undefined;
 
     this.inboundBucket = process.env.PASSWORDLESS_SES_BUCKET ?? "";
@@ -40,6 +41,22 @@ export default class PasswordlessLoginPage {
 
       if (await startButton.isVisible()) {
         await startButton.click();
+      }
+
+      if (!(await this.passwordField().isVisible())) {
+        return;
+      } else {
+        if (!this.basicAuthPassword) {
+          throw new Error(
+            "BASIC_PASSWORD is required to sign in to this service",
+          );
+        }
+
+        await this.passwordField().scrollIntoViewIfNeeded();
+        await this.passwordField().fill(this.basicAuthPassword);
+
+        await this.continueButton().click();
+        await this.passwordField().waitFor({ state: "hidden" });
       }
 
       await this.emailInput().fill(this.emailAddress);
@@ -105,6 +122,14 @@ export default class PasswordlessLoginPage {
   async click(locator) {
     await locator.scrollIntoViewIfNeeded();
     await locator.click();
+  }
+
+  startButton() {
+    return this.page.getByRole("button", { name: "Start now" });
+  }
+
+  passwordField() {
+    return this.page.locator("#basic-session-password-field");
   }
 
   continueButton() {

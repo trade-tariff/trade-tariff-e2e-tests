@@ -1,16 +1,9 @@
 import CognitoUserCleaner from "../utils/cognitoUserCleaner.js";
-import S3Lock from "../utils/s3Lock.js";
-import PasswordlessLoginPage from "./passwordlessLoginPage.js";
 import { expect } from "@playwright/test";
 
 export default class SubscribePage {
   constructor(page) {
     this.page = page;
-    this.email_address = process.env.PASSWORDLESS_SUBSCRIPTIONS_EMAIL;
-    this.locker = new S3Lock(
-      process.env.PASSWORDLESS_SES_BUCKET,
-      process.env.PASSWORDLESS_LOCK_KEY,
-    );
     this.cleaner = new CognitoUserCleaner(
       process.env.PASSWORDLESS_POOL_NAME,
       process.env.AWS_DEFAULT_REGION,
@@ -18,12 +11,6 @@ export default class SubscribePage {
   }
 
   async start() {
-    await new PasswordlessLoginPage(this.page, {
-      startingURL: "/subscriptions/start",
-    }).login();
-
-    await expect(this.page.url()).toMatch("subscriptions");
-
     await this.click(this.stopPressWatchlistLink());
     await this.check(this.chapterPreferencesRadio());
     await this.click(this.continueButton());

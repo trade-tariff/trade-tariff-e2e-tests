@@ -28,10 +28,10 @@
     "@smithy/types" "^4.19.0"
     tslib "^2.6.2"
 
-"@aws-sdk/client-cognito-identity-provider@^3.1150.0":
-  version "3.1150.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/client-cognito-identity-provider/-/client-cognito-identity-provider-3.1150.0.tgz#02a80344acf31850d00bd907dbc185cb98bb62e2"
-  integrity sha512-MdUO7+ctiATD6fRtcnMp6RWNlVo7u/qGKyLHo8owNKK9kcsKC1Rgh2xeztvE+pMIVaitoszLaIDIKYn4U2hGhQ==
+"@aws-sdk/client-cognito-identity-provider@^3.1152.0":
+  version "3.1152.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/client-cognito-identity-provider/-/client-cognito-identity-provider-3.1152.0.tgz#34bbb9ec6ad2791898a9a2c63a153e4103ae5965"
+  integrity sha512-XIMSkrNCnQ0/4N47MQREyDupF5fWoBQKUcft+MLoMeSobQuKJaKOG7kNBZLT0DOdlqHfe5tEUFjm+eDazB27og==
   dependencies:
     "@aws-sdk/core" "^3.978.3"
     "@aws-sdk/credential-provider-node" "^3.972.86"

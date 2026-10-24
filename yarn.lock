@@ -13,10 +13,10 @@
     "@smithy/types" "^4.19.0"
     tslib "^2.6.2"
 
-"@aws-sdk/client-cloudwatch@^3.1150.0":
-  version "3.1150.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/client-cloudwatch/-/client-cloudwatch-3.1150.0.tgz#ca2971b7919f118d71ca432f81de6e12a93ab373"
-  integrity sha512-7A06Mw01Oj2M2/zYqobPfPV6dy/rTC7Y6JNc8vO3PxPcI383HI2GrcXN5WGppDRBZpe+gTKECv18UQoHkTX4/w==
+"@aws-sdk/client-cloudwatch@^3.1152.0":
+  version "3.1152.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/client-cloudwatch/-/client-cloudwatch-3.1152.0.tgz#5525001d6157b7ca93faf94224776a06e975676a"
+  integrity sha512-ame++euxZ5vKIiF57pXj/SftvrSlhtxKVMPkOUdZAYr6rUEhFHNCYEBTPQpW2260s5G5rEGdppTv3wnHIOQ6mQ==
   dependencies:
     "@aws-sdk/core" "^3.978.3"
     "@aws-sdk/credential-provider-node" "^3.972.86"

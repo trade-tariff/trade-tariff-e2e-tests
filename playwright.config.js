@@ -2,12 +2,23 @@ import { defineConfig, devices } from "@playwright/test";
 import path from "path";
 import dotenv from "dotenv";
 import { wafBypassHeaders } from "./utils/wafBypassHeaders.js";
-import { runAdmin } from "./utils/projectArgs.js";
+import { runProject, authFileFor } from "./utils/projectArgs.js";
 
 const playwrightEnv = process.env.PLAYWRIGHT_ENV ?? "development";
 const envFile = path.resolve(import.meta.dirname, `.env.${playwrightEnv}`);
+const desktopChrome = devices["Desktop Chrome"];
 dotenv.config({ path: envFile });
 dotenv.config({ path: ".env" });
+
+const authedProject = (name, { skipVar, baseURL, ...overrides }) =>
+  runProject(name, { skipVars: [skipVar, "SKIP_PASSWORDLESS"] })
+    ? {
+        name,
+        testDir: `./tests/${name}`,
+        ...overrides,
+        use: { ...desktopChrome, baseURL, storageState: authFileFor(name) },
+      }
+    : null;
 
 // See https://playwright.dev/docs/test-configuration.
 const onCI = (process.env.CI ?? "false") === "true";
@@ -36,33 +47,28 @@ export default defineConfig({
   },
   timeout: 30 * 1000, // 30 seconds
   projects: [
-    ...(runAdmin()
-      ? [
-          {
-            name: "admin",
-            testDir: "./tests/admin",
-            use: {
-              ...devices["Desktop Chrome"],
-              baseURL: process.env.ADMIN_URL,
-              storageState: "playwright/.auth/admin.json",
-            },
-          },
-        ]
-      : []),
     {
       name: "api",
       testDir: "./tests/api",
-      use: { ...devices["Desktop Chrome"] },
+      use: { ...desktopChrome },
     },
     {
       name: "frontend",
       testDir: "./tests/frontend",
-      use: { ...devices["Desktop Chrome"] },
+      use: { ...desktopChrome },
     },
-    {
-      name: "myott",
-      testDir: "./tests/myott",
-      use: { ...devices["Desktop Chrome"] },
-    },
-  ],
+    authedProject("admin", {
+      skipVar: "SKIP_ADMIN",
+      baseURL: process.env.ADMIN_URL,
+    }),
+    authedProject("dev-hub", {
+      skipVar: "SKIP_DEV_HUB",
+      baseURL: process.env.DEV_HUB_URL,
+      timeout: 60 * 1000, // keys take a while to be active/revoked
+    }),
+    authedProject("myott", {
+      skipVar: "SKIP_MYOTT",
+      baseURL: process.env.MYOTT_URL,
+    }),
+  ].filter(Boolean),
 });

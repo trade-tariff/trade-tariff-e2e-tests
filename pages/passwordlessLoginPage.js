@@ -1,3 +1,4 @@
+import { expect } from "@playwright/test";
 import { setTimeout as sleep } from "node:timers/promises";
 
 import EmailFetcher from "../utils/emailFetcher.js";
@@ -10,6 +11,7 @@ export default class PasswordlessLoginPage {
     options = {
       emailAddress: string,
       startingURL: string,
+      signedInText: string | RegExp,
     }
   */
 
@@ -20,6 +22,8 @@ export default class PasswordlessLoginPage {
       process.env.PASSWORDLESS_SUBSCRIPTIONS_EMAIL ??
       "";
     this.startingURL = options.startingURL ?? "";
+    this.signedInText = options.signedInText;
+    this.basicAuthPassword = process.env.BASIC_PASSWORD;
     this.email = undefined;
 
     this.inboundBucket = process.env.PASSWORDLESS_SES_BUCKET ?? "";
@@ -32,8 +36,6 @@ export default class PasswordlessLoginPage {
 
   async login() {
     await this.locker.withLock(async () => {
-      this.otpRequestedAt = new Date();
-
       await this.page.goto(this.startingURL);
 
       const startButton = this.page.getByRole("button", { name: "Start now" });
@@ -42,7 +44,22 @@ export default class PasswordlessLoginPage {
         await startButton.click();
       }
 
+      if (await this.passwordField().isVisible()) {
+        if (!this.basicAuthPassword) {
+          throw new Error(
+            "BASIC_PASSWORD is required to sign in to this service",
+          );
+        }
+
+        await this.passwordField().scrollIntoViewIfNeeded();
+        await this.passwordField().fill(this.basicAuthPassword);
+
+        await this.continueButton().click();
+        await this.passwordField().waitFor({ state: "hidden" });
+      }
+
       await this.emailInput().fill(this.emailAddress);
+      this.otpRequestedAt = new Date();
       await this.continueButton().click();
 
       if (await this.notificationBanner().isVisible()) {
@@ -59,6 +76,8 @@ export default class PasswordlessLoginPage {
         this.continueButton().click(),
         this.page.waitForLoadState("load"),
       ]);
+
+      await this.assertLoggedIn();
     });
 
     return this.page;
@@ -107,12 +126,20 @@ export default class PasswordlessLoginPage {
     await locator.click();
   }
 
+  startButton() {
+    return this.page.getByRole("button", { name: "Start now" });
+  }
+
+  passwordField() {
+    return this.page.locator("#basic-session-password-field");
+  }
+
   continueButton() {
     return this.page.getByRole("button", { name: "Continue" });
   }
 
   emailInput() {
-    return this.page.locator('input[name="passwordless_form[email]"]');
+    return this.page.getByRole("textbox", { name: "Email" });
   }
 
   otpFirstDigitInput() {
@@ -127,5 +154,13 @@ export default class PasswordlessLoginPage {
     return this.notificationBanner()
       .locator(".govuk-notification-banner__content")
       .textContent();
+  }
+
+  async assertLoggedIn() {
+    if (!this.signedInText) {
+      throw new Error("signedInText is required to confirm sign in");
+    }
+
+    await expect(this.page.getByText(this.signedInText).first()).toBeVisible();
   }
 }

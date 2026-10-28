@@ -62,15 +62,17 @@ You can run the tests by running `make test` in the repository root. There are
 variables that control which tests are run, which environment to use, and how
 many Playwright workers to use.
 
-`projects` selects the configured Playwright projects. If omitted, the suite
-runs the projects enabled for the selected environment. The production
-configuration excludes the Admin project.
-It can be set to a combination of the following, as a comma separated string:
+`projects` selects the configured Playwright projects. If omitted, the
+suite runs the projects enabled for the selected environment. It can be set
+to a combination of the following, as a comma separated string:
 
 - `admin`
 - `api`
+- `dev-hub`
 - `frontend`
 - `myott`
+
+The production configuration excludes projects that rely on passwordless login.
 
 If you only want to run one test project, you can use the singular form,
 `project` instead.

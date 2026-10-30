@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { chromium } from "@playwright/test";
 
+import LoginPage from "../pages/loginPage.js";
 import PasswordlessLoginPage from "../pages/passwordlessLoginPage.js";
 import { authFileFor } from "./projectArgs.js";
 
@@ -81,6 +82,11 @@ export default async function passwordlessLogin(
 
     try {
       const page = await context.newPage();
+
+      // The passwordless form sits behind the basic auth page on non-production
+      // environments. Clear it first so its cookie is saved with the state.
+      await new LoginPage(url, page).login();
+
       await new PasswordlessLoginPage(page, {
         startingURL: url,
         signedInText,

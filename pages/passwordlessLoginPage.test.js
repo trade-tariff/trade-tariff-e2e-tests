@@ -7,7 +7,9 @@ function loginPageFor(page = {}) {
   const loginPage = Object.create(PasswordlessLoginPage.prototype);
   loginPage.page = page;
   loginPage.email = undefined;
-  loginPage.otpRequestedAt = new Date();
+  loginPage.otpRequestedAtSecond = new Date(
+    Math.floor(Date.now() / 1000) * 1000,
+  );
   return loginPage;
 }
 
@@ -34,7 +36,7 @@ test("returns and deletes the first email received after the OTP request", async
 
   assert.equal(result, email);
   assert.equal(loginPage.email, email);
-  assert.deepEqual(requests, [{ notBefore: loginPage.otpRequestedAt }]);
+  assert.deepEqual(requests, [{ notBefore: loginPage.otpRequestedAtSecond }]);
   assert.deepEqual(deletedKeys, [email.s3_key]);
 });
 

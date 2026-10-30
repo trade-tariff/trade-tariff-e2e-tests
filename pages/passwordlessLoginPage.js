@@ -44,7 +44,9 @@ export default class PasswordlessLoginPage {
       }
 
       await this.emailInput().fill(this.emailAddress);
-      this.otpRequestedAt = new Date();
+      this.otpRequestedAtSecond = new Date(
+        Math.floor(Date.now() / 1000) * 1000,
+      );
       await this.continueButton().click();
 
       if (await this.notificationBanner().isVisible()) {
@@ -76,7 +78,7 @@ export default class PasswordlessLoginPage {
 
     while (Date.now() - startedAt < timeoutMs) {
       const email = await this.fetcher.getLatestEmail({
-        notBefore: this.otpRequestedAt,
+        notBefore: this.otpRequestedAtSecond,
       });
 
       if (email) {

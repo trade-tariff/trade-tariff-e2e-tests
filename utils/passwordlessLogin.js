@@ -7,7 +7,7 @@ import PasswordlessLoginPage from "../pages/passwordlessLoginPage.js";
 import { authFileFor } from "./projectArgs.js";
 
 const root = path.resolve(import.meta.dirname, "../");
-const LOGIN_ACTION_TIMEOUT_MS = 10_000;
+export const LOGIN_ACTION_TIMEOUT_MS = 10_000;
 
 async function readAuthState(authFile) {
   try {
@@ -32,6 +32,8 @@ async function isSessionValid(browser, state, url, headers) {
     extraHTTPHeaders: headers,
     storageState: state,
   });
+
+  context.setDefaultTimeout(LOGIN_ACTION_TIMEOUT_MS);
 
   try {
     const page = await context.newPage();

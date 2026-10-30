@@ -2,7 +2,7 @@ import { expect } from "@playwright/test";
 import { wafBypassHeaders } from "./wafBypassHeaders.js";
 
 export default class ApiClient {
-  static #defaultTimeoutMs = 45_000;
+  static #defaultTimeoutMs = 20_000;
   static #requestTimeoutMs = 5_000;
   static #retrySleepMs = 1000;
   #apiKey;

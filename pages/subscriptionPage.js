@@ -1,18 +1,20 @@
-import CognitoUserCleaner from "../utils/cognitoUserCleaner.js";
 import { expect } from "@playwright/test";
 
 export default class SubscribePage {
   constructor(page) {
     this.page = page;
-    this.emailAddress = process.env.PASSWORDLESS_SUBSCRIPTIONS_EMAIL;
-    this.cleaner = new CognitoUserCleaner(
-      process.env.PASSWORDLESS_POOL_NAME,
-      process.env.AWS_DEFAULT_REGION,
-    );
   }
 
   async start() {
     await this.click(this.stopPressWatchlistLink());
+
+    // unsubscribe incase an old test run failed
+    if (await this.unsubscribeLink().isVisible()) {
+      await this.unsubscribe();
+      await this.click(this.viewWatchListsLink());
+      await this.click(this.stopPressWatchlistLink());
+    }
+
     await this.check(this.chapterPreferencesRadio());
     await this.click(this.continueButton());
 
@@ -24,19 +26,15 @@ export default class SubscribePage {
 
     await this.click(this.viewWatchListsLink());
     await this.click(this.stopPressWatchlistLink());
+    await this.unsubscribe();
+  }
+
+  async unsubscribe() {
     await this.click(this.unsubscribeLink());
     await this.click(this.unsubscribeSubmitButton());
     await expect(this.page.url()).toContain(
       "/subscriptions/unsubscribe/confirmation",
     );
-
-    if (!this.emailAddress) {
-      console.warn(
-        "PASSWORDLESS_SUBSCRIPTIONS_EMAIL not set, stale users may be in Cognito!",
-      );
-    } else {
-      await this.cleaner.deleteUserByEmail(this.emailAddress);
-    }
   }
 
   async click(locator) {

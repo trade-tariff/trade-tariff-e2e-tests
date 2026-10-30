@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { expect, chromium } from "@playwright/test";
 import { authFileFor } from "./projectArgs.js";
+import { LOGIN_ACTION_TIMEOUT_MS } from "./passwordlessLogin.js";
 
 const root = path.resolve(import.meta.dirname, "../");
 
@@ -30,6 +31,8 @@ export default async function passwordlessLogout(
         .then(() => authFile)
         .catch(() => undefined),
     });
+
+    context.setDefaultTimeout(LOGIN_ACTION_TIMEOUT_MS);
 
     try {
       const page = await context.newPage();

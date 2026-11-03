@@ -102,7 +102,9 @@ export default class KeysPage {
 
   // Locators
   keyCreatedText() {
-    return this.page.getByText(/(?:trade tariff )?api key created/i);
+    return this.page.getByText(
+      /(?:trade tariff )?api key(?: has been)? created/i,
+    );
   }
 
   revokeLink(row) {
@@ -137,12 +139,12 @@ export default class KeysPage {
 
   backLink() {
     return this.page.getByRole("link", {
-      name: /back to (?:trade tariff )?keys/i,
+      name: /back to (?:trade tariff|api)? keys/i,
     });
   }
 
   copyButton() {
-    return this.page.getByRole("button").filter({ hasText: /copy/i });
+    return this.page.getByRole("button").filter({ hasText: /copy/i }).first();
   }
 
   keyRow(description) {
@@ -150,7 +152,7 @@ export default class KeysPage {
   }
 
   statusCell(row) {
-    return row.getByTestId("status_cell");
+    return row.getByTestId("status_tag");
   }
 
   descriptionCell(description) {
@@ -170,13 +172,15 @@ export default class KeysPage {
 
   fpoKeysTabLink() {
     return this.page.getByRole("link", {
-      name: /fpo keys/i,
+      name: "FPO keys",
+      exact: true,
     });
   }
 
   tariffKeysTabLink() {
     return this.page.getByRole("link", {
-      name: /trade tariff keys/i,
+      name: "Trade Tariff keys",
+      exact: true,
     });
   }
 }

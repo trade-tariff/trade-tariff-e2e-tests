@@ -11,7 +11,7 @@ dotenv.config({ path: envFile });
 dotenv.config({ path: ".env" });
 
 const authedProject = (name, { skipVar, baseURL, ...overrides }) =>
-  runProject(name, { skipVars: [skipVar, "SKIP_PASSWORDLESS"] })
+  runProject(name, { skipVars: [skipVar, "SKIP_PASSWORDLESS_VERIFICATION"] })
     ? {
         name,
         testDir: `./tests/${name}`,

@@ -28,11 +28,20 @@ function projectArgs() {
   for (let index = 0; index < process.argv.length; index += 1) {
     const argument = process.argv[index];
 
-    if (argument === "--project" && process.argv[index + 1]) {
-      projects.push(process.argv[index + 1]);
-      index += 1;
-    } else if (argument.startsWith("--project=")) {
-      projects.push(argument.slice("--project=".length));
+    if (argument === "--") break;
+
+    if (argument === "--project" || argument.startsWith("--project=")) {
+      if (argument.startsWith("--project=")) {
+        projects.push(argument.slice("--project=".length));
+      }
+
+      while (
+        index + 1 < process.argv.length &&
+        !process.argv[index + 1].startsWith("-")
+      ) {
+        index += 1;
+        projects.push(process.argv[index]);
+      }
     }
   }
 
@@ -59,7 +68,9 @@ export function runProject(name, { skipProd = true, skipVars = [] } = {}) {
 export function authedProjectsToRun() {
   return Object.entries(AUTHED_PROJECTS)
     .filter(([name, { skipVar }]) =>
-      runProject(name, { skipVars: [skipVar, "SKIP_PASSWORDLESS"] }),
+      runProject(name, {
+        skipVars: [skipVar, "SKIP_PASSWORDLESS_VERIFICATION"],
+      }),
     )
     .map(([name, { urlVar, signedInText }]) => ({
       name,

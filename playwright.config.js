@@ -64,7 +64,7 @@ export default defineConfig({
     authedProject("dev-hub", {
       skipVar: "SKIP_DEV_HUB",
       baseURL: process.env.DEV_HUB_URL,
-      timeout: 60 * 1000, // keys take a while to be active/revoked
+      timeout: 90 * 1000, // keys take a while to be active/revoked
     }),
     authedProject("myott", {
       skipVar: "SKIP_MYOTT",

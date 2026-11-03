@@ -14,7 +14,7 @@ test.afterEach(async ({ page }, testInfo) => {
   if (testInfo.status === testInfo.expectedStatus) return;
 
   keysPage ??= new KeysPage(page);
-  await keysPage.click(keysPage.fpoKeysTabLink());
+  await keysPage.fpoKeysTabLink().click();
   await keysPage
     .revokeKey(keyDescription)
     .catch((error) =>
@@ -30,10 +30,10 @@ test.afterEach(async ({ page }, testInfo) => {
 test("creating, using, and revoking an FPO API key", async ({ page }) => {
   await new LoginPage(process.env.DEV_HUB_URL, page, true).login();
   keysPage = new KeysPage(page);
-  await keysPage.click(keysPage.fpoKeysTabLink());
+  await keysPage.fpoKeysTabLink().click();
 
   await keysPage.createKey(keyDescription);
-  const storedKey = keysPage.getKey(keyDescription);
+  const storedKey = keysPage.getSecret(keyDescription);
   expect(storedKey, "API key should be stored after create").not.toBeNull();
 
   const apiClient = new ApiClient(storedKey);

@@ -9,7 +9,7 @@ test.afterEach(async ({ page }, testInfo) => {
   if (testInfo.status === testInfo.expectedStatus) return;
 
   keysPage ??= new KeysPage(page);
-  await keysPage.click(keysPage.tariffKeysTabLink());
+  await keysPage.tariffKeysTabLink().click();
   await keysPage
     .revokeKey(keyDescription)
     .catch((error) =>
@@ -25,7 +25,7 @@ test.afterEach(async ({ page }, testInfo) => {
 test("creating, revoking and deleting a trade tariff key", async ({ page }) => {
   await new LoginPage(process.env.DEV_HUB_URL, page, true).login();
   keysPage = new KeysPage(page);
-  await keysPage.click(keysPage.tariffKeysTabLink());
+  await keysPage.tariffKeysTabLink().click();
 
   await keysPage.createKey(keyDescription);
   const storedSecret = keysPage.getSecret(keyDescription);

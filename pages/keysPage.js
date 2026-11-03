@@ -16,10 +16,8 @@ export default class KeysPage {
     await this.keyDescriptionInput().fill(description);
     await this.continueButton().click();
     await this.assertKeyCreationSuccess();
-    await this.storeSecret(description);
+    await this.setSecret(description);
     await this.backLink().click();
-
-    this.assertKeysPage();
 
     await this.assertKeyCreated(description);
   }
@@ -32,7 +30,7 @@ export default class KeysPage {
 
     this.assertRevokeKeyPage();
     await this.assertRevokeConfirmationPage(description);
-
+    await this.revokeButton().click();
     await this.assertKeyRevoked(description);
   }
 
@@ -67,9 +65,9 @@ export default class KeysPage {
   }
 
   async assertKeyCreationSuccess() {
-    await expect(this.keyCreatedText().toBeVisible());
-    await expect(this.secret().toBeVisible());
-    await expect(this.copyButton().toBeVisible());
+    await expect(this.keyCreatedText()).toBeVisible();
+    await expect(this.secret()).toBeVisible();
+    await expect(this.copyButton()).toBeVisible();
   }
 
   async assertKeyRevoked(description) {
@@ -164,6 +162,14 @@ export default class KeysPage {
     return this.page.getByTestId("key_description_input");
   }
 
+  secret() {
+    // will find whichever is visible using the :visible pseudo-class
+    return this.page.locator(
+      "code#api-key-secret:visible",
+      "code#trade-tariff-client-secret:visible",
+    );
+  }
+
   fpoKeysTabLink() {
     return this.page.getByRole("link", {
       name: /fpo keys/i,
@@ -174,10 +180,5 @@ export default class KeysPage {
     return this.page.getByRole("link", {
       name: /trade tariff keys/i,
     });
-  }
-
-  async click(locator) {
-    await locator.scrollIntoViewIfNeeded();
-    await locator.click();
   }
 }

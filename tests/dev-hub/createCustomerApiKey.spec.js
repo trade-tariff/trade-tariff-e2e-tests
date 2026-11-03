@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import LoginPage from "../../pages/loginPage.js";
-import DashboardPage from "../../pages/dashboardPage.js";
+import KeysPage from "../../pages/keysPage.js";
 import ApiClient from "../../utils/apiClient.js";
 
 const keyDescription = `playwright-${Date.now()}`;
@@ -8,30 +8,32 @@ const classificationOpts = {
   description: "jewelry case",
   expectFailure: false,
 };
-let dashboardPage;
+let keysPage;
 
 test.afterEach(async ({ page }, testInfo) => {
   if (testInfo.status === testInfo.expectedStatus) return;
 
-  dashboardPage ??= new DashboardPage(page);
-  await dashboardPage
+  keysPage ??= new KeysPage(page);
+  await keysPage.click(keysPage.fpoKeysTabLink());
+  await keysPage
     .revokeKey(keyDescription)
     .catch((error) =>
       console.warn(`Cleanup could not revoke ${keyDescription}:`, error),
     );
-  await dashboardPage
+  await keysPage
     .deleteKey(keyDescription)
     .catch((error) =>
       console.warn(`Cleanup could not delete ${keyDescription}:`, error),
     );
 });
 
-test("creating, using, and revoking a customer API key", async ({ page }) => {
+test("creating, using, and revoking an FPO API key", async ({ page }) => {
   await new LoginPage(process.env.DEV_HUB_URL, page, true).login();
-  dashboardPage = new DashboardPage(page);
+  keysPage = new KeysPage(page);
+  await keysPage.click(keysPage.fpoKeysTabLink());
 
-  await dashboardPage.createKey(keyDescription);
-  const storedKey = dashboardPage.getKey(keyDescription);
+  await keysPage.createKey(keyDescription);
+  const storedKey = keysPage.getKey(keyDescription);
   expect(storedKey, "API key should be stored after create").not.toBeNull();
 
   const apiClient = new ApiClient(storedKey);
@@ -39,7 +41,7 @@ test("creating, using, and revoking a customer API key", async ({ page }) => {
   apiClient.assertSuccessful();
   apiClient.assertClassification("420292");
 
-  await dashboardPage.revokeKey(keyDescription);
+  await keysPage.revokeKey(keyDescription);
 
   await apiClient.doClassification({
     ...classificationOpts,
@@ -47,5 +49,5 @@ test("creating, using, and revoking a customer API key", async ({ page }) => {
   });
   apiClient.assertUnsuccessful();
 
-  await dashboardPage.deleteKey(keyDescription);
+  await keysPage.deleteKey(keyDescription);
 });

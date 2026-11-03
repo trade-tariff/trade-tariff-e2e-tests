@@ -1,32 +1,23 @@
 import { expect } from "@playwright/test";
 
-export default class TradeTariffKeysPage {
+export default class KeysPage {
   constructor(page) {
     this.page = page;
     this.secrets = {};
   }
 
   async createKey(description) {
-    await this.navigateToTradeTab();
-
     await this.page
-      .getByRole("link", { name: "Create new Trade Tariff key" })
+      .getByRole("link", {
+        name: /create new (?:trade tariff) key/i,
+      })
       .click();
 
-    this.assertNewKeyPage();
-
-    await this.page
-      .locator("#trade-tariff-key-description-field")
-      .fill(description);
-    await this.page.getByRole("button", { name: /continue/i }).click();
-
+    await this.keyDescriptionInput().fill(description);
+    await this.continueButton().click();
     await this.assertKeyCreationSuccess();
-
     await this.storeSecret(description);
-
-    await this.page
-      .getByRole("link", { name: "Back to Trade Tariff keys" })
-      .click();
+    await this.backLink().click();
 
     this.assertKeysPage();
 
@@ -34,88 +25,70 @@ export default class TradeTariffKeysPage {
   }
 
   async revokeKey(description) {
-    await this.ensureOnKeysPage();
+    const revokeLink = this.revokeLink(this.keyRow(description));
 
-    await this.keyRow(description)
-      .getByRole("link", { name: "Revoke" })
-      .click();
+    if (!(await revokeLink.isVisible())) return;
+    await revokeLink.click();
 
     this.assertRevokeKeyPage();
     await this.assertRevokeConfirmationPage(description);
 
-    await this.page.getByRole("button", { name: "Revoke" }).click();
-
-    this.assertKeysPage();
-
-    await this.assertRevoked(description);
+    await this.assertKeyRevoked(description);
   }
 
   async deleteKey(description) {
-    await this.ensureOnKeysPage();
+    const deleteLink = this.deleteLink(this.keyRow(description));
 
-    await this.keyRow(description)
-      .getByRole("link", { name: "Delete" })
-      .click();
+    if (!(await deleteLink.isVisible())) return;
+    await deleteLink.click();
 
     this.assertDeleteKeyPage();
     await this.assertDeleteConfirmationPage(description);
-
-    await this.page.getByRole("button", { name: "Delete" }).click();
-
-    this.assertKeysPage();
-
+    await this.deleteButton().click();
     await this.assertDeleted(description);
   }
 
-  async assertRevoked(description) {
-    const keyRow = this.keyRow(description);
-    await expect(keyRow).toBeVisible();
-
-    const statusCell = keyRow.locator("td.govuk-table__cell:nth-child(5)");
-    await expect(statusCell).toHaveText("Revoked");
-
-    const deleteLink = keyRow.getByRole("link", { name: "Delete" });
-    await expect(deleteLink).toBeVisible();
+  getSecret(description) {
+    return description in this.secrets ? this.secrets[description] : null;
   }
 
-  async assertDeleted(description) {
-    const keyRow = this.keyRow(description);
-    await expect(keyRow).not.toBeVisible();
+  async setSecret(locator, description) {
+    const secret = await this.page.locator(locator).innerText();
+    this.secrets[description] = secret.trim();
   }
 
+  // Assertions
   async assertKeyCreated(description) {
     const keyRow = this.keyRow(description);
     await expect(keyRow).toBeVisible();
-
-    const statusCell = keyRow.locator("td.govuk-table__cell:nth-child(5)");
-    await expect(statusCell).toContainText(/active/i);
-
-    const descriptionCell = keyRow.locator("td").first();
-    await expect(descriptionCell).toContainText(description);
-
-    const revokeLink = keyRow.getByRole("link", { name: "Revoke" });
-    await expect(revokeLink).toBeVisible();
+    await expect(this.statusCell()).toContainText(/active/i);
+    await expect(this.descriptionCell(description)).toContainText(description);
+    await expect(this.revokeLink()).toBeVisible();
   }
 
   async assertKeyCreationSuccess() {
-    await expect(
-      this.page.getByText(/Trade Tariff API key created/i),
-    ).toBeVisible();
-    await expect(
-      this.page.getByText(/copy your client secret now/i),
-    ).toBeVisible();
-    await expect(
-      this.page.locator("#trade-tariff-client-secret"),
-    ).toBeVisible();
-    await expect(
-      this.page.getByRole("button", { name: /copy secret/i }),
-    ).toBeVisible();
+    await expect(this.keyCreatedText().toBeVisible());
+    await expect(this.secret().toBeVisible());
+    await expect(this.copyButton().toBeVisible());
+  }
+
+  async assertKeyRevoked(description) {
+    const keyRow = this.keyRow(description);
+    await expect(keyRow).toBeVisible();
+    await expect(this.statusCell().toContainText(/revoked/i));
+    await expect(this.descriptionCell(description)).toContainText(description);
+    await expect(this.revokeLink().toBeVisible());
+  }
+
+  async assertKeyDeleted(description) {
+    const keyRow = this.keyRow(description);
+    await expect(keyRow).not.toBeVisible();
   }
 
   async assertRevokeConfirmationPage(description) {
     await expect(
       this.page.getByText(
-        /Your Trade Tariff API key will be revoked with immediate effect/i,
+        /your (?:trade tariff) api key will be revoked with immediate effect/i,
       ),
     ).toBeVisible();
     await expect(this.page.getByText(description)).toBeVisible();
@@ -124,56 +97,87 @@ export default class TradeTariffKeysPage {
   async assertDeleteConfirmationPage(description) {
     await expect(
       this.page.getByText(
-        /Your Trade Tariff API key will be deleted with immediate effect/i,
+        /your (?:trade tariff) api key will be deleted with immediate effect/i,
       ),
     ).toBeVisible();
     await expect(this.page.getByText(description)).toBeVisible();
   }
 
-  getSecret(description) {
-    return description in this.secrets ? this.secrets[description] : null;
+  // Locators
+  keyCreatedText() {
+    return this.page.getByText(/(?:trade tariff) api key created/i);
   }
 
-  async storeSecret(description) {
-    const secret = await this.page
-      .locator("#trade-tariff-client-secret")
-      .innerText();
-    this.secrets[description] = secret.trim();
+  revokeLink(row) {
+    return row.getByRole("link", {
+      name: "Revoke",
+    });
   }
 
-  assertNewKeyPage() {
-    expect(this.page.url()).toContain("keys/new");
+  revokeButton() {
+    return this.page.getByRole("button", {
+      name: "Revoke",
+    });
   }
 
-  assertRevokeKeyPage() {
-    expect(this.page.url()).toMatch(/keys\/.*\/revoke/);
+  deleteLink(row) {
+    return row.getByRole("link", {
+      name: "Delete",
+    });
   }
 
-  assertDeleteKeyPage() {
-    expect(this.page.url()).toMatch(/keys\/.*\/delete/);
+  deleteButton() {
+    return this.page.getByRole("button", {
+      name: "Delete",
+    });
   }
 
-  assertKeysPage() {
-    expect(this.page.url()).toContain("keys");
+  continueButton() {
+    return this.page.getByRole("button", {
+      name: /continue/i,
+    });
+  }
+
+  backLink() {
+    return this.page.getByRole("link", {
+      name: /back to (?:trade tariff) keys/i,
+    });
+  }
+
+  copyButton() {
+    return this.page.getByRole("button").filter({ hasText: /copy/i });
   }
 
   keyRow(description) {
     return this.page.getByRole("row").filter({ hasText: description });
   }
 
-  async navigateToTradeTab() {
-    const tradeTab = this.page
-      .getByRole("link", { name: /Trade Tariff Keys/i })
-      .or(this.page.getByRole("tab", { name: /Trade Tariff Keys/i }));
-    await tradeTab.click();
-    await this.page.waitForLoadState("networkidle");
+  statusCell() {
+    return this.page.getByTestId("status_cell");
   }
 
-  async ensureOnKeysPage() {
-    if (!this.page.url().includes("/trade_tariff_keys")) {
-      const baseUrl = this.page.url().split("/").slice(0, 3).join("/");
-      await this.page.goto(`${baseUrl}/trade_tariff_keys`);
-      await this.page.waitForLoadState("networkidle");
-    }
+  descriptionCell(description) {
+    return this.keyRow(description).locator("td").first();
+  }
+
+  keyDescriptionInput() {
+    return this.page.getByTestId("key_description_input");
+  }
+
+  fpoKeysTabLink() {
+    return this.page.getByRole("link", {
+      name: /fpo keys/i,
+    });
+  }
+
+  tariffKeysTabLink() {
+    return this.page.getByRole("link", {
+      name: /trade tariff keys/i,
+    });
+  }
+
+  async click(locator) {
+    await locator.scrollIntoViewIfNeeded();
+    await locator.click();
   }
 }

@@ -25,7 +25,7 @@ export default class KeysPage {
   async revokeKey(description) {
     const revokeLink = this.revokeLink(this.keyRow(description));
 
-    if (!(await revokeLink.isVisible())) return;
+    await expect(revokeLink).toBeVisible();
     await revokeLink.click();
 
     await this.assertRevokeConfirmationPage(description);
@@ -36,7 +36,7 @@ export default class KeysPage {
   async deleteKey(description) {
     const deleteLink = this.deleteLink(this.keyRow(description));
 
-    if (!(await deleteLink.isVisible())) return;
+    await expect(deleteLink).toBeVisible();
     await deleteLink.click();
 
     await this.assertDeleteConfirmationPage(description);

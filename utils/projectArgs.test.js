@@ -3,10 +3,21 @@ import test from "node:test";
 
 import { authedProjectsToRun, runProject } from "./projectArgs.js";
 
+const skipFlags = [
+  "SKIP_ADMIN",
+  "SKIP_DEV_HUB",
+  "SKIP_MYOTT",
+  "SKIP_PASSWORDLESS_VERIFICATION",
+];
+
 function withEnv(values, assertion) {
   const originals = {};
+  const effective = {
+    ...Object.fromEntries(skipFlags.map((flag) => [flag, undefined])),
+    ...values,
+  };
 
-  for (const [key, value] of Object.entries(values)) {
+  for (const [key, value] of Object.entries(effective)) {
     originals[key] = process.env[key];
 
     if (value === undefined) {

@@ -1,3 +1,4 @@
+import { expect } from "@playwright/test";
 import { setTimeout as sleep } from "node:timers/promises";
 
 import EmailFetcher from "../utils/emailFetcher.js";
@@ -10,6 +11,7 @@ export default class PasswordlessLoginPage {
     options = {
       emailAddress: string,
       startingURL: string,
+      signedInText: string | RegExp,
     }
   */
 
@@ -20,6 +22,7 @@ export default class PasswordlessLoginPage {
       process.env.PASSWORDLESS_SUBSCRIPTIONS_EMAIL ??
       "";
     this.startingURL = options.startingURL ?? "";
+    this.signedInText = options.signedInText;
     this.email = undefined;
 
     this.inboundBucket = process.env.PASSWORDLESS_SES_BUCKET ?? "";
@@ -32,8 +35,6 @@ export default class PasswordlessLoginPage {
 
   async login() {
     await this.locker.withLock(async () => {
-      this.otpRequestedAt = new Date();
-
       await this.page.goto(this.startingURL);
 
       const startButton = this.page.getByRole("button", { name: "Start now" });
@@ -43,6 +44,9 @@ export default class PasswordlessLoginPage {
       }
 
       await this.emailInput().fill(this.emailAddress);
+      this.otpRequestedAtSecond = new Date(
+        Math.floor(Date.now() / 1000) * 1000,
+      );
       await this.continueButton().click();
 
       if (await this.notificationBanner().isVisible()) {
@@ -59,6 +63,8 @@ export default class PasswordlessLoginPage {
         this.continueButton().click(),
         this.page.waitForLoadState("load"),
       ]);
+
+      await this.assertLoggedIn();
     });
 
     return this.page;
@@ -72,7 +78,7 @@ export default class PasswordlessLoginPage {
 
     while (Date.now() - startedAt < timeoutMs) {
       const email = await this.fetcher.getLatestEmail({
-        notBefore: this.otpRequestedAt,
+        notBefore: this.otpRequestedAtSecond,
       });
 
       if (email) {
@@ -102,17 +108,12 @@ export default class PasswordlessLoginPage {
     await this.otpFirstDigitInput().pressSequentially(code);
   }
 
-  async click(locator) {
-    await locator.scrollIntoViewIfNeeded();
-    await locator.click();
-  }
-
   continueButton() {
     return this.page.getByRole("button", { name: "Continue" });
   }
 
   emailInput() {
-    return this.page.locator('input[name="passwordless_form[email]"]');
+    return this.page.getByRole("textbox", { name: "Email" });
   }
 
   otpFirstDigitInput() {
@@ -127,5 +128,13 @@ export default class PasswordlessLoginPage {
     return this.notificationBanner()
       .locator(".govuk-notification-banner__content")
       .textContent();
+  }
+
+  async assertLoggedIn() {
+    if (!this.signedInText) {
+      throw new Error("signedInText is required to confirm sign in");
+    }
+
+    await expect(this.page.getByText(this.signedInText).first()).toBeVisible();
   }
 }

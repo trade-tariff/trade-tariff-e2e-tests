@@ -1,26 +1,12 @@
-import { test, expect } from "../../fixtures.js";
-import SubscriptionPage from "../../pages/subscriptionPage.js";
+import { test, expect } from "@playwright/test";
 import LoginPage from "../../pages/loginPage.js";
-import { isProductionEnvironment } from "../../utils/environment.js";
+import SubscriptionPage from "../../pages/subscriptionPage.js";
 
 test.describe("Stop Press watchlist", () => {
   test("should complete passwordless subscription and unsubscription", async ({
     page,
   }) => {
-    if (isProductionEnvironment()) {
-      test.skip("Skipping in production environment");
-      return;
-    }
-
-    const skipPasswordlessVerification =
-      process.env.SKIP_PASSWORDLESS_VERIFICATION === "true";
-
-    if (skipPasswordlessVerification) {
-      test.skip("Skipping passwordless verification");
-      return;
-    }
-
-    await new LoginPage("/subscriptions/start", page).login();
+    await new LoginPage(process.env.MYOTT_URL, page, true).login();
     const subscribePage = new SubscriptionPage(page);
 
     await subscribePage.start();

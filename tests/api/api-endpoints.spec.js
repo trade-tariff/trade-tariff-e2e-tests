@@ -1,6 +1,6 @@
 import Jsona from "jsona";
-import { test, expect } from "../fixtures.js";
-import { validateApi } from "../utils/validateApi";
+import { test, expect } from "../../fixtures.js";
+import { validateApi } from "../../utils/validateApi";
 
 const apiPaths = [
   // Legacy path validation
@@ -32,10 +32,6 @@ const apiPaths = [
 test.describe("API Endpoints Validation", () => {
   for (const path of apiPaths) {
     test(`${path} returns valid responses`, async ({ request }) => {
-      if (process.env.SKIP_API === "true") {
-        test.skip(`Skipping API test for ${path} as per environment variable`);
-        return;
-      }
       const result = await validateApi(request, path);
       expect(result).toBeDefined();
     });
@@ -44,13 +40,6 @@ test.describe("API Endpoints Validation", () => {
   test("/api/v2/exchange_rates/:id supports filtering by type", async ({
     request,
   }) => {
-    if (process.env.SKIP_API === "true") {
-      test.skip(
-        "Skipping API test for exchange rates as per environment variable",
-      );
-      return;
-    }
-
     // NOTE: Monthly Exchange Rates are published on the penultimate Wednesday of the month
     const date = new Date();
     date.setMonth(date.getMonth() - 1);

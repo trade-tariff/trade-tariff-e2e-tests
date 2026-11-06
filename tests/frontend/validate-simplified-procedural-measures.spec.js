@@ -1,5 +1,5 @@
-import { test, expect } from "../fixtures.js";
-import LoginPage from "../pages/loginPage.js";
+import { test, expect } from "../../fixtures.js";
+import LoginPage from "../../pages/loginPage.js";
 
 test.describe("Simplified Procedural Measures", () => {
   test("allows switching between the by date and by code views", async ({

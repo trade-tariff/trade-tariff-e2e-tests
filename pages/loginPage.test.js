@@ -3,12 +3,12 @@ import test from "node:test";
 
 import LoginPage from "./loginPage.js";
 
-function fakePage(passwordFieldVisible) {
+function fakePage(options = {}) {
   const events = [];
 
   const passwordField = {
     async isVisible() {
-      return passwordFieldVisible;
+      return options.passwordFieldVisible;
     },
     async scrollIntoViewIfNeeded() {
       events.push(["scrollIntoViewIfNeeded"]);
@@ -21,6 +21,22 @@ function fakePage(passwordFieldVisible) {
     },
   };
 
+  const buttons = {
+    Continue: {
+      async click() {
+        events.push(["click", "Continue"]);
+      },
+    },
+    "Start now": {
+      async isVisible() {
+        return options.startNowVisible;
+      },
+      async click() {
+        events.push(["click", "Start now"]);
+      },
+    },
+  };
+
   const page = {
     locator(selector) {
       assert.equal(selector, "#basic-session-password-field");
@@ -28,12 +44,8 @@ function fakePage(passwordFieldVisible) {
     },
     getByRole(role, options) {
       assert.equal(role, "button");
-      assert.deepEqual(options, { name: "Continue" });
-      return {
-        async click() {
-          events.push(["click"]);
-        },
-      };
+      assert.ok(["Start now", "Continue"].includes(options.name));
+      return buttons[options.name];
     },
   };
 
@@ -48,20 +60,26 @@ function loginPageFor(page, password) {
 }
 
 test("waits for the basic auth challenge to clear before returning", async () => {
-  const { page, events } = fakePage(true);
+  const { page, events } = fakePage({
+    passwordFieldVisible: true,
+    startNowVisible: false,
+  });
 
   await loginPageFor(page, "secret").completeBasicAuth();
 
   assert.deepEqual(events, [
     ["scrollIntoViewIfNeeded"],
     ["fill", "secret"],
-    ["click"],
+    ["click", "Continue"],
     ["waitFor", "hidden"],
   ]);
 });
 
 test("does nothing when no basic auth challenge is shown", async () => {
-  const { page, events } = fakePage(false);
+  const { page, events } = fakePage({
+    passwordFieldVisible: false,
+    startNowVisible: false,
+  });
 
   await loginPageFor(page, "secret").completeBasicAuth();
 
@@ -69,10 +87,41 @@ test("does nothing when no basic auth challenge is shown", async () => {
 });
 
 test("fails clearly when the challenge is shown but no password is configured", async () => {
-  const { page } = fakePage(true);
+  const { page } = fakePage({
+    passwordFieldVisible: true,
+    startNowVisible: false,
+  });
 
   await assert.rejects(
     () => loginPageFor(page, undefined).completeBasicAuth(),
     /BASIC_PASSWORD/,
   );
+});
+
+test("clicks 'Start now' if it is visible", async () => {
+  const { page, events } = fakePage({
+    passwordFieldVisible: false,
+    startNowVisible: true,
+  });
+
+  await loginPageFor(page, "secret").completeBasicAuth();
+
+  assert.deepEqual(events, [["click", "Start now"]]);
+});
+
+test("completes basic auth when a service has a 'Start now' page", async () => {
+  const { page, events } = fakePage({
+    passwordFieldVisible: true,
+    startNowVisible: true,
+  });
+
+  await loginPageFor(page, "secret").completeBasicAuth();
+
+  assert.deepEqual(events, [
+    ["click", "Start now"],
+    ["scrollIntoViewIfNeeded"],
+    ["fill", "secret"],
+    ["click", "Continue"],
+    ["waitFor", "hidden"],
+  ]);
 });

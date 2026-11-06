@@ -9,3 +9,6 @@ node_modules/
 /.pre-commit-config-nix.yaml
 
 .env
+.DS_Store
+
+playwright/.auth/

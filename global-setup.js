@@ -2,6 +2,8 @@ import path from "path";
 import dotenv from "dotenv";
 import { wafBypassHeaders } from "./utils/wafBypassHeaders.js";
 import { waitUntilReady } from "./utils/waitUntilReady.js";
+import passwordlessLogin from "./utils/passwordlessLogin.js";
+import { authedProjectsToRun } from "./utils/projectArgs.js";
 
 const playwrightEnv = process.env.PLAYWRIGHT_ENV ?? "development";
 const envFile = path.resolve(import.meta.dirname, `.env.${playwrightEnv}`);
@@ -84,4 +86,12 @@ export default async function globalSetup() {
     headers: wafBypassHeaders(),
     onAttempt: logAttempt,
   });
+
+  // log in sequentially to prevent overlap
+  for (const { name, url, signedInText } of authedProjectsToRun()) {
+    await passwordlessLogin(name, url, {
+      headers: wafBypassHeaders(),
+      signedInText,
+    });
+  }
 }

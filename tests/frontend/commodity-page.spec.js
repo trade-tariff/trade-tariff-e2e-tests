@@ -125,7 +125,11 @@ test.describe("Commodity page", () => {
       .filter({ hasText: /\S/ })
       .first();
     await expect(dialog).toBeVisible();
-    await expect(dialog).not.toBeEmpty();
+
+    // The modal always adds a "Conditions" heading and a "Close" link around
+    // the injected content. Check the injected content itself, so an empty
+    // conditions dialog fails.
+    await expect(dialog.locator(".info-inner")).toHaveText(/\S/);
   });
 
   test("shows the Northern Ireland measures and switches back to the UK tariff", async ({

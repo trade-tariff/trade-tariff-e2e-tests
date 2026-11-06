@@ -1,5 +1,5 @@
-import { test, expect } from "../fixtures.js";
-import LoginPage from "../pages/loginPage.js";
+import { test, expect } from "../../fixtures.js";
+import LoginPage from "../../pages/loginPage.js";
 
 // Cherry tomatoes. The commodity exists in the UK and XI tariffs and has
 // duties, VAT, controls, quotas and a preferential rate for Albania.
